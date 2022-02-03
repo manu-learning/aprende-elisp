@@ -1,0 +1,315 @@
+* Listas
+   1. Debemos comenzar con el apóstrofe '
+   2. Seguido de la lista entre paréntesis ()
+   
+   *Observación:*
+   No importa si le agregamos espacio, o enter, será una lista
+
+  #+BEGIN_SRC elisp
+    '(+ 2 2)
+
+    ; no confundir con la funcion (+ 2 2)
+    ; el de arriba empieza con el apóstrofe, por tanto es una lista
+  #+END_SRC
+
+  #+RESULTS:
+  | + | 2 | 2 |
+  
+  #+BEGIN_SRC elisp
+    '(rose
+      violet
+      daisy
+      buttercup)
+  #+END_SRC
+
+  #+RESULTS:
+  | rose | violet | daisy | buttercup |
+
+  #+BEGIN_SRC elisp
+    '(rose violet daisy buttercup)
+  #+END_SRC
+
+  #+RESULTS:
+  | rose | violet | daisy | buttercup |
+
+  #+BEGIN_SRC elisp
+    '(esta lista tiene "un cadena jojo")
+  #+END_SRC
+
+  #+RESULTS:
+  | esta | lista | tiene | un cadena jojo |
+
+* Variables setq y set
+  
+  #+BEGIN_SRC elisp
+    'flores
+  #+END_SRC
+
+  #+RESULTS:
+  : flores
+  
+  #+BEGIN_SRC elisp
+    ;; le asignamos a flower una lista
+    ;; 'flower es una variable
+    ;; y '(rosa violeta) es una lista con dos elementos
+    (set 'flowers '(rosa violeta))
+
+    ;; hacemos que retorne la lista que tiene la variable flowers
+    flowers
+  #+END_SRC
+
+  #+RESULTS:
+  | rosa | violeta |
+
+  #+BEGIN_SRC elisp
+    ;; la q de setq hace referencia a quote osea cita
+    ;; por tanto no es necesario citar el primer argumento carnivores
+    ;;
+    ;; mientras que con set solo, si habria que citar el primer argumento
+    ;; con el apóstrofe
+    (setq carnivores '(lion tiger leopard))
+    carnivores
+  #+END_SRC
+
+  #+RESULTS:
+  | lion | tiger | leopard |
+
+
+  #+BEGIN_SRC elisp
+    ;; con setq podemos hacer varias asignaciones
+    ;; en este caso a carnivores una lista
+    ;; y a hervivores otra lista
+    (setq carnivores '(lion tiger leopard)
+          hervivores '(gacela cebra))
+
+    carnivores
+    hervivores
+  #+END_SRC
+
+  #+RESULTS:
+  | gacela | cebra |
+  
+  #+BEGIN_SRC elisp
+    (setq contador 0)
+    (setq contador (+ contador 1))
+    contador
+  #+END_SRC
+
+  #+RESULTS:
+  : 1
+* let
+  Para crear variables locales, reescriben el valor de otra variable externa
+  para uso de la funcion 
+
+  #+BEGIN_SRC elisp
+    ;; let lleva como primer argumento lista de (variable valor)
+    ;; como tercer argumento un cuerpo que es una lista de..
+    (let ((a "I'm a")(b "I'm b"))
+      (message "Hello, %s. Hello %s" a b))
+  #+END_SRC
+
+  #+RESULTS:
+  : Hello, I'm a. Hello I'm b
+
+* Buffers
+  #+BEGIN_SRC elisp
+    (buffer-file-name)
+  #+END_SRC
+
+  #+RESULTS:
+  : /home/jelou/Documentos/git/aprende-elisp/test1.org
+
+  #+BEGIN_SRC elisp
+    (buffer-name)
+  #+END_SRC
+
+  #+RESULTS:
+  : test1.org
+
+  #+BEGIN_SRC elisp
+    (buffer-size)
+  #+END_SRC
+
+  #+RESULTS:
+  : 4953
+* Funciones
+  #+BEGIN_SRC elisp
+    (defun multiply-by-sevens (number)
+      "Multiply NUMBER by seven."
+      (* 7 number))
+
+    (multiply-by-sevens 3)
+  #+END_SRC
+
+  #+RESULTS:
+  : 21
+
+  #+BEGIN_SRC elisp
+    (defun multiply-by-seven (number)       ; Interactive version.
+      "Multiply NUMBER by seven."
+      (interactive "p")
+      (message "The result is %d" (* 7 number)))
+
+    (multiply-by-seven)
+  #+END_SRC
+
+  #+RESULTS:
+  : The result is 14
+
+  #+BEGIN_SRC elisp
+    (defun a-exists-only-in-my-body (a)
+      (other-function))
+
+    (defun other-function ()
+      (message "I see `a', its value is %s" a))
+
+    (a-exists-only-in-my-body t)
+  #+END_SRC
+
+  #+RESULTS:
+  : I see ‘a’, its value is t
+
+  #+BEGIN_SRC elisp
+    (defun some-other-function ()
+      (message "I see `c', its value is: %s" c))
+
+    (defvar c t)
+
+    (let ((a "I'm lexically bound")
+          (c "I'm special and therefore dynamically bound"))
+      (some-other-function)
+      (message "I see `a', its values is: %s" a))
+  #+END_SRC
+
+  #+RESULTS:
+  : I see ‘a’, its values is: I'm lexically bound
+
+  1. https://www.gnu.org/software/emacs/manual/html_node/eintr/defun.html
+* Argumentos
+  #+BEGIN_SRC elisp
+    ;; concatenamos cadenas
+    (concat "hola" "como")
+  #+END_SRC
+
+  #+RESULTS:
+  : holacomo
+
+  #+BEGIN_SRC elisp
+    ;; pasamos valores de funciones como argumentos
+    ;; el (+ 1 2) es similar a haskell
+    (concat "hola " (number-to-string (+ 1 2)) " jo")
+  #+END_SRC
+
+  #+RESULTS:
+  : hola3jo
+* Message
+  #+BEGIN_SRC elisp
+    ;; funciona como un echo o print
+    (message "hola")
+  #+END_SRC
+
+  #+RESULTS:
+  : hola
+
+  #+BEGIN_SRC elisp
+    (message "hola %s" (buffer-name))
+  #+END_SRC
+
+  #+RESULTS:
+  : hola test1.org
+
+  #+BEGIN_SRC elisp
+    ;; se le puede pasar parámetros
+    ;; y usar como el printf de c
+    (message "hola %s mi edad es %d" (buffer-name) (+ 10 10))
+  #+END_SRC
+
+  #+RESULTS:
+  : hola test1.org mi edad es 20
+
+* If
+  #+BEGIN_SRC elisp
+    ;; el (> 5 4) es como haskell, 5 es el primer agumento y 4 el segundo
+
+    (if(> 5 4)             ;; parte si..
+        (message "shit"))  ;; parte entonces
+  #+END_SRC
+
+  #+RESULTS:
+  : shit
+
+  #+BEGIN_SRC elisp
+    (defun tipo-animal (tipo)                      ;; defun nombre (lista-argumentos)
+      "Imprime un mensaje segun el tipo de animal" ;; "documentación"
+      (if (equal tipo 'fiera)                      ;; cuerpo parte-si
+          (message "Cuidado! Corré!")              ;; cuerpo parte-entonces
+          (message "No es peligroso")))            ;; cuerpo parte-resto
+
+
+    (tipo-animal 'fiera)
+    (tipo-animal 'cebrita)
+  #+END_SRC
+
+  #+RESULTS:
+  : No es peligroso
+
+* Varios
+  #+BEGIN_SRC elisp
+    ;; let tiene una lista de dos elementos (nombre1 valor1) (nombre2 valor2)
+    ;; "en este caso valor1 y valor2 son funciones que retoran datos del buffer actual"
+    ;; seguido de un cuerpo que es (message )
+    (let ((foo (buffer-name))
+          (bar (buffer-size)))
+      (message "Este buffer es %s y tiene %d caracteres." foo bar))
+  #+END_SRC
+
+  #+RESULTS:
+  : Este buffer es test1.org y tiene 5993 caracteres.
+
+  #+BEGIN_SRC elisp
+    ;; (point-min) devuelve la posición del cursor al principio de buffer
+    ;; (point) devuelve la posición actual del cursor
+    (message "Hay %d caracteres dentro de este buffer."
+             (- (point)
+                (save-excursion
+                  (goto-char (point-min)) (point))))
+  #+END_SRC
+
+  #+RESULTS:
+  : Hay 6289 caracteres dentro de este buffer.
+
+  #+BEGIN_SRC elisp
+    (defun hello (name)
+      (insert (format "Hello %s!\n" name)))
+
+    (hello "you")
+  #+END_SRC
+
+  #+RESULTS:
+
+* Practicando
+  #+BEGIN_SRC elisp
+    (setq invitados '("carlos" "pepe"))
+
+    (defun saludar(mi-nombre)
+      (let ((tu-nombre (read-from-minibuffer "Enter your name: ")))
+        (message "tu nombre es %s y yo soy %s" tu-nombre mi-nombre) )
+      )
+
+    ;;(saludar "perez")
+
+    (mapcar 'saludar invitados)
+  #+END_SRC
+
+  #+RESULTS:
+  | carlos | pepe |
+* Referencias
+** Referencias Oficiales
+  4. https://www.gnu.org/software/emacs/manual/elisp.html
+  5. https://www.gnu.org/software/emacs/manual/html_node/eintr/
+** Referencias Extraoficiales
+  1. https://www.davidam.com/docu/emacs-lisp-intro-es.html
+  2. https://learnxinyminutes.com/docs/es-es/elisp-es/
+  3. https://with-emacs.com/posts/tutorials/almost-all-you-need-to-know-about-variables/
+  4. https://www.iteramos.com/pregunta/10725/-consejos-para-aprender-elisp-
+  5. https://poesiabinaria.net/2017/09/aprende-utilizar-emacs-abre-mente-desdobla-tus-dedos-trabaja-gusto-se-productivo/
