@@ -1,54 +1,251 @@
-* Listas
-   1. Debemos comenzar con el apóstrofe '
-   2. Seguido de la lista entre paréntesis ()
-   
-   *Observación:*
-   No importa si le agregamos espacio, o enter, será una lista
+#+STARTUP: inlineimages
+* Comandos de Documentación
+  |-----------------------------------+---------------------------------------------|
+  | Comando                           | Descripción                                 |
+  |-----------------------------------+---------------------------------------------|
+  | ~C-h-k~ ó  ~M-x describe-key~     | Describe que función utiliza un atajo       |
+  | ~C-h b~ ó ~M-x describe-bindings~ | Lista todos los atajos (de todos los modos) |
+  | ~C-h f~ ó ~M-x describe-function~ | Muestra la documentación de una función     |
+  |-----------------------------------+---------------------------------------------|
+* Scratch Buffer + Interprete IELM
+** Conceptos
+   - El *Scratch Buffer* se puede usar en conjunto con el *Interprete IELM*
+** Scratch Buffer
+  - Para probar comandos *elisp* sin la necesidad de recargar *emacs*
+  - Es útil para probar configuraciones de emacs
+  - Podemos cargarlo de tres opciones
+    1) En *evil mode* con el atajo ~SPC b s~ y se abre en el buffer actual
+    2) En *evil mode* con ~SPC b b~ para listar los buffers y lo elegimos
+    3) En *god mode* ~C-x C-b~ ó bien ~M-x list-buffers~
+** Interprete IELM
+*** Conceptos
+  - Sus siglas hacen referencia a *Emacs-Lisp Interactive Shell*
+  - Para evaluar expresiones ó funciones desde una terminal
+  - Para cargarlo ejecutar ~M-x ielm~
+  - Una alternativa al *interprete IELM* es ~M-x expression~ ó ~M-:~ para evaluar el buffer actual desde el minibuffer
+*** Comandos
+  |------------+------------------------------------------------------------|
+  | Atajo      | Descripción                                                |
+  |------------+------------------------------------------------------------|
+  | ~C-<Up>~   | Selecciona del historial de comandos, el comando anterior  |
+  | ~C-<Down>~ | Selecciona del historial de comandos, el comando siguiente |
+  | ~C-c C-l~  | Carga un nuevo buffer con el historial de comandos         |
+  |------------+------------------------------------------------------------|
+* Expresiones Simbólicas (sexp)
+** Conceptos
+   - Se las conoce por ~s-expresion~ ó ~sexp~ a cualquier expresión entre () que no sea una función ...(?)
+   - Usan la notación poláca/prefija (Ej. ~(+ 1 1)~ ó ~(* 1 (+ 2 2)~ ...)
+   - Representan una *estructura de datos de árbol* basadas en *listas anidadas* (/donde cada sublista es un subárbol/)
+   - El primer elemento de una expresión simbólica es un operador y el resto son elementos
+** Ejemplo
+*** Ejemplo 1 - Operaciones ariméticas
+   #+BEGIN_SRC elisp
+     ;; las siguientes son expresiones simbólicas
 
-  #+BEGIN_SRC elisp
-    '(+ 2 2)
+     ;; - el primer elemento es el operador +
+     ;; - el resto de los elementos son los operandos 2 y 4
+     (+ 2 4)
 
-    ; no confundir con la funcion (+ 2 2)
-    ; el de arriba empieza con el apóstrofe, por tanto es una lista
-  #+END_SRC
+     ;; - el primer elemento es el operador *
+     ;; - el resto de los elementos son los operandos 1 y el resultado de una función (+ 2 2)
+     (* 1 (+ 2 2))
+   #+END_SRC
+*** Ejemplo 2 - Dígrafo de una expresión-s con operadores primitivos
+   #+BEGIN_SRC dot :file img/digrafo-sexp.png :exports results
+     digraph G {
+       labelloc="t"
+       label="Expresión Simbólica"
 
-  #+RESULTS:
-  | + | 2 | 2 |
-  
-  #+BEGIN_SRC elisp
-    '(rose
-      violet
-      daisy
-      buttercup)
-  #+END_SRC
+       subgraph cluster_0{
+       "*" [label="* función"]
+       "*" -> 1
+       "*" -> "+"
+       label="(* 1 (+ 2 4))"
 
-  #+RESULTS:
-  | rose | violet | daisy | buttercup |
+       subgraph cluster_1{
+         "+" [label="+ función"]
+         "+" -> 2
+         "+" -> 4
+         color=purple
+         style=dashed
+         label="(+ 2 4)"
+       }
+       }
+     }
+   #+END_SRC
 
-  #+BEGIN_SRC elisp
-    '(rose violet daisy buttercup)
-  #+END_SRC
+   #+RESULTS:
+   [[file:img/digrafo-sexp.png]]
 
-  #+RESULTS:
-  | rose | violet | daisy | buttercup |
+*** Ejemplo 3 - Dígrafo de una expresión-s con una función propia
+   #+BEGIN_SRC dot :file img/digrafo-sexp-defun1.png :exports results
+     digraph G {
+       labelloc="t"
+       label="(defun mutiplicar-por-siete(numero) (* 7 numero))"
 
-  #+BEGIN_SRC elisp
-    '(esta lista tiene "un cadena jojo")
-  #+END_SRC
+       a->b
+       b->c
+       b->d
+       a [label="defun multiplicar-por-siete(numero)"]
+       b [label="*"]
+       c [label=7]
+       d [label="numero"]
+     }
 
-  #+RESULTS:
-  | esta | lista | tiene | un cadena jojo |
+   #+END_SRC
 
-* Variables setq y set
-  
-  #+BEGIN_SRC elisp
+   #+RESULTS:
+   [[file:img/digrafo-sexp-defun1.png]]
+
+*** Ejemplo 4 - Dígrafo de una expresión-s con varias funciones propias
+   #+BEGIN_SRC dot :file img/digrafo-sexp-defun2.png :exports results
+     digraph G {
+       labelloc="t"
+       label="(defun mutiplicar-por-siete(num) (interactive \"n\") (message \"result: %d\" (* 7 num))"
+
+       subgraph cluster_0{
+         label="Expresión Simbólica (sexp)"
+         a->b
+         a->c
+         color=orange
+
+         subgraph cluster_0{
+           label="(message \"result: %d\" (* 7 num))"
+           c->d
+           c->e
+           color=blue
+
+           subgraph cluster_1{
+             label="(* 7 num)"
+             e->f
+             e->g
+             color=hotpink
+           }
+         }
+       }
+
+       a [label="defun multiplicar-por-siete(num)"]
+       b [label="interactive \"n\" "]
+       c [label="message"]
+       d [label=" \"result: %d\" "]
+       e [label="*"]
+       f [label=7]
+       g [label="num"]
+       //b [label="message \"hola\""]
+     }
+   #+END_SRC
+
+   #+RESULTS:
+   [[file:img/digrafo-sexp-defun2.png]]
+
+* Evaluar Funciones y Expresiones Simbólicas
+** Evaluar una expresión simbólica (sexp)
+   - Posicionamos el cursor al final de la expresión y tenemos dos opciones
+     1) En *god mode* el atajo ~C-x C-e~ ó.. ~C-x eval-last-sexp~
+     2) En *evil mode* el atajo ~, e e~
+** Evaluar una función
+   - Posicionamos el cursor dentro de la fución y tenemos dos opciones
+     1) En *god mode* el atajo ~C-x eval-defun~
+     2) En *evil mode* ~, e f~
+** Crear atajo para evaluar una función
+   #+BEGIN_SRC elisp :exports both
+     ;; - definimos la función
+     ;; - para evaluarla ejecutar `M-x eval-defun' ó `, e f'
+     ;; (también podemos evaluarla con `C-x C-e' con el cursor al final de la función)
+     ;; - para invocarla ejecutamos `M-x imprimir-hora-actual'
+     (defun imprimir-hora-actual()
+       "Esta función imprime la hora actual"
+       (interactive)
+       (message (current-time-string)))
+
+     ;; - creamos el atajo `C-c t' para invocar la función `imprimir-hora-actual'
+     ;; - para evaluarla debemos posicionar el cursor al final y ejecutar `C-x C-e'
+     (global-set-key (kbd "C-c t") 'imprimir-hora-actual)
+   #+END_SRC
+* Operaciones básicas
+** Operaciones relacionales
+   #+BEGIN_SRC elisp :exports both
+     ;; en el minibuffer muestra boolean `t' (true)
+     (= 2 (+ 1 1))
+
+     ;; alternativa al `='
+     (eq 2 (+ 1 1))
+
+     ;; en el minibuffer muestra `nil' (false)
+     (= 2 (+ 0 1))
+
+     ;; alternativa al `='
+     (eq 2 (+ 0 1))
+
+     ;; el resultado será `nil'
+     (< 1 1)
+
+     ;; el resultado será el boolean `t' (true)
+     (< 1 (+ 1 1))
+
+     ;; en el minibuffer muestra boolean `t' (true)
+     (equal (list 1 2 3) (list 1 2 3))
+   #+END_SRC
+** Operaciones ariméticas
+   #+BEGIN_SRC elisp :exports both
+     ;; en el minibuffer muestra `2'
+     (+ 1 1)
+
+     ;; tu sabrás (?)
+     (sin pi)
+
+     ;; tu sabrás (?)
+     (cos pi)
+
+     ;; tu sabrás (?)
+     (tan (/ pi 2))
+   #+END_SRC
+** Condicionales simples/compuestos
+   #+BEGIN_SRC elisp :exports both
+     ;; - el booleano true se nombra `t'
+     ;; - si se cumple muestra el primero, si no lo segundo
+     (if t "si se cumple muestra esto" "si no se cumple muestra esto")
+
+     ;; - si la expresion de la condición es distinta de `nil' entonces es true
+     (if nil "si se cumple muestra esto" "si no se cumple muestra esto")
+
+     ;; como la expresión 123 es distinta de `nil' la considera verdadera
+     (if 123 "si se cumple muestra esto" "si no se cumple muestra esto")
+   #+END_SRC
+* Declarar Variables y Definirlas con setq y set
+** Conceptos
+  - La sintáxis para declarar una variable es ~'nombreVariable~
+  - La sintáxis para declarar e inicializar una variable es ~(setq nombreVariable valor)~ ó ~(set 'nombre valor)~
+
+  |-----------------+----------------------------------------------------------------------------------------------------|
+  | Keyword         | Descripción                                                                                        |
+  |-----------------+----------------------------------------------------------------------------------------------------|
+  | ~defconst~      | Definir una variable constante (/actúa como un calificador de tipo const, lo hace no modificable/) |
+  | ~setq~          | Definir (declarar e inicializar) una variable                                                      |
+  | ~set~           | Definir (declarar e inicializar) una variable (necesitás usar el apostrofe en la variable)         |
+  | ~'~ (apostrofe) | Declarar una variable                                                                              |
+  |-----------------+----------------------------------------------------------------------------------------------------|
+
+  #+BEGIN_QUOTE
+  Un error común es evaluar la expresión con ~C-x C-e~ pero no posicionar el cursor al final de ésta
+
+  Por ejemplo si definimos una variable ~contador~ de la siguiente manera ~(setq contador 0)~
+  y tenemos el cursor en el paréntesis de apertura,
+  al intentar evaluar con el atajo ~C-x C-e~ se producirá un error y no evaluará lo que queríamos
+
+  La solución es posicionar el cursor al final de dicha expresión,
+  es decir en el paréntesis de cierre
+  #+END_QUOTE
+** Ejemplos
+*** Ejempo 1 - Declarar una variable
+  #+BEGIN_SRC elisp :exports both
     'flores
   #+END_SRC
 
   #+RESULTS:
   : flores
-  
-  #+BEGIN_SRC elisp
+*** Ejemplo 2 - Definir una variable con set y asignarle una lista como valor
+  #+BEGIN_SRC elisp :exports both
     ;; le asignamos a flower una lista
     ;; 'flower es una variable
     ;; y '(rosa violeta) es una lista con dos elementos
@@ -60,102 +257,270 @@
 
   #+RESULTS:
   | rosa | violeta |
-
-  #+BEGIN_SRC elisp
+*** Ejemplo 3 - Definir una variable con setq y asignarle una lista como valor
+  #+BEGIN_SRC elisp :exports both
     ;; la q de setq hace referencia a quote osea cita
-    ;; por tanto no es necesario citar el primer argumento carnivores
+    ;; por tanto no es necesario citar el primer argumento carnivores con el apóstrofe
     ;;
-    ;; mientras que con set solo, si habria que citar el primer argumento
-    ;; con el apóstrofe
+    ;; mientras que con set solo, si habria que citar el primer argumento con el apóstrofe
     (setq carnivores '(lion tiger leopard))
     carnivores
   #+END_SRC
 
   #+RESULTS:
   | lion | tiger | leopard |
+*** Ejemplo 4 - Declarando e inicializando multiples variables con setq
+  #+BEGIN_SRC elisp :exports both
+    ;; con setq podemos hacer multiples asignaciones
+    (setq nombre "carlitos" edad 19)
 
+    ;; usamos message para imprimir
+    ;; usando los especificadore de formato %s (para string)
+    ;; y %d (para constantes numéricas enteras)
+    (message "su nombre es %s y su edad es %d" nombre edadd)
+  #+END_SRC
 
-  #+BEGIN_SRC elisp
-    ;; con setq podemos hacer varias asignaciones
+  #+RESULTS:
+  : su nombre es carlitos y su edad es 19
+
+*** Ejemplo 5 - Declarando e inicializando multiples variables con setq
+  #+BEGIN_SRC elisp :exports both
+    ;; con setq podemos hacer multiples asignaciones
     ;; en este caso a carnivores una lista
     ;; y a hervivores otra lista
-    (setq carnivores '(lion tiger leopard)
-          hervivores '(gacela cebra))
+    (setq carnivoros '(lion tiger leopard)
+          hervivoros '(gacela cebra))
 
-    carnivores
-    hervivores
+    carnivoros
+    hervivoros
   #+END_SRC
 
   #+RESULTS:
   | gacela | cebra |
-  
-  #+BEGIN_SRC elisp
+*** Ejemplo 6 - Usar una variable como contador e incrementar su valor en 1
+  #+BEGIN_SRC elisp :exports both
+    ; declaramos la variable `contador' y la inicializamos en 0
+    ; declaramos la variable `contador' e inicializamos en cero
     (setq contador 0)
+
+    ; - incrementamos el valor actual en 1 usando la función para sumar (+ x y)
+    ; - cada vez que hagamos `C-x C-e' incrementará en 1 la variable `contador'
     (setq contador (+ contador 1))
+
+    ; imprimimos su valor
     contador
   #+END_SRC
 
   #+RESULTS:
   : 1
-* let
-  Para crear variables locales, reescriben el valor de otra variable externa
-  para uso de la funcion 
+* Definir Listas
+** Conceptos
+   - La sintáxis es ~'(atomo1 atomo2 ...)~
+   - Cada elemento de una lista se llama *átomo*
+   - Todas las palabras de un string se consideran como un sólo átomo
+   - LLeva como prefijo el símbolo apóstrofe ~'~ seguido de la lista de elementos delimitados por un paréntesis ~()~
+   - No importa si le agregamos muchos espacios ó saltos de linea, seguirá siendo una lista con la misma cantidad de átomos
+** Ejemplos
+*** Ejemplo 1 - Lista vacía
+  #+BEGIN_SRC elisp :exports both
+    '()
+  #+END_SRC
 
-  #+BEGIN_SRC elisp
-    ;; let lleva como primer argumento lista de (variable valor)
-    ;; como tercer argumento un cuerpo que es una lista de..
-    (let ((a "I'm a")(b "I'm b"))
-      (message "Hello, %s. Hello %s" a b))
+  #+RESULTS:
+
+*** Ejemplo 2 - Lista de Constantes numéricas y Operadores como átomos
+  #+BEGIN_SRC elisp :exports both
+    '(+ 2 2)
+
+    ; no confundir con la funcion (+ 2 2)
+    ; el de arriba empieza con el apóstrofe, por tanto es una lista
+  #+END_SRC
+
+  #+RESULTS:
+  | + | 2 | 2 |
+*** Ejemplo 3 - Lista con saltos de linea
+  #+BEGIN_SRC elisp :exports both
+    '(rose
+      violet
+      daisy
+      buttercup)
+  #+END_SRC
+
+  #+RESULTS:
+  | rose | violet | daisy | buttercup |
+*** Ejemplo 4 - Lista con espacios
+  #+BEGIN_SRC elisp :exports both
+    '(rose violet daisy buttercup)
+  #+END_SRC
+
+  #+RESULTS:
+  | rose | violet | daisy | buttercup |
+*** Ejemplo 5 - Lista con literales cadena cómo átomos
+  #+BEGIN_SRC elisp :exports both
+    '(esta lista tiene "un literal cadena" "otro string")
+  #+END_SRC
+
+  #+RESULTS:
+  | esta | lista | tiene | un literal cadena | otro string |
+* [TODO] Let
+** Conceptos
+  - La sintáxis es ~(let ((variableA valorX) (variableB valorY) ...) (cuerpo-de-la-funcion)~
+  - Crea un nuevo scope, sobreescribe el valor de las variables externas pero sólo dentro del ámbito/scope
+  - Para definir variables locales ó sobreescribir variables externas para uso dentro de la funcion
+  - Los parámetros que recibe son
+    1. 1º parámetro: una lista de clave-valor cada elemento uno con ésta sintáxis ~(variable valor)~
+    2. 2º parámetro: el cuerpo de la función (una ó varias funciones) 
+** Ejemplos
+*** Ejemplo 1 - Definimos dos variables locales al scope de let
+  #+BEGIN_SRC elisp :exports both
+    ;; let lleva como primer argumento una lista de clave-valor ((variableA valor) (variableB valor))
+    ;; como segundo argumento un cuerpo de la función
+    (let ((a "Soy a")(b "y yo soy b"))
+      (message "Hi, %s. Hi %s" a b))
   #+END_SRC
 
   #+RESULTS:
   : Hello, I'm a. Hello I'm b
+*** Ejemplo 2 - Definimos dos variables, y reescribimos dentro del scope el valor de una variable externa
+  #+BEGIN_SRC elisp :exports both
+    ;; definimos `x' con valor 10
+    (setq x 10)
+    ;; nos imprimirá 10 en el minibuffer
+    (message "el valor de x es %d" x)
 
-* Buffers
+    ;; - se definen dos variables x=10 e y=5, y luego se multiplican
+    ;; - el resultado de evaluar será 10
+    ;; - sobreescribe el valor de `x' internamente sólo para esta función
+    (let ((x 2) (y 5)) (* x y))
+
+    ;; el resultado de x será el mismo que definimos al principio
+    ;; se mantiene con el valor `10', no fue alterado por `let'
+    (message "el valor de x es %d" x)
+  #+END_SRC
+*** [TODO] Ejemplo 3
+  #+BEGIN_SRC elisp :exports both
+    ;; definimos una función que no recibe parámetros,
+    ;; e imprime en el minibuffer el valor de `c'
+    (defun funcion-loca ()
+      (message "El valor de `c' es %s" c))
+
+    (defvar c "tururu..")
+
+    ;; Vemos que el valor de `c' no será el de arriba
+    (let ((a "String de una variable local") (c "Sobreescribo la variable externa"))
+      (funcion-loca)
+      (message "El valor de `a' es: %s, y el de `c' es %s" a c))
+  #+END_SRC
+
+  #+RESULTS:
+  : El valor de ‘a’ es: String de una variable local, y el de ‘c’ es Sobreescribo la variable externa
+*** Ejemplo 4 - Variables con datos del buffer actual
+  #+BEGIN_SRC elisp :exports both
+    ;; let tiene una lista de clave-valor ((nombre1 valor1) (nombre2 valor2))
+    ;; "en este caso valor1 y valor2 son funciones que retoran datos del buffer actual"
+    ;; seguido de un cuerpo que es (message )
+    (let ((foo (buffer-name)) (bar (buffer-size)))
+      (message "Este buffer es %s y tiene %d caracteres." foo bar))
+  #+END_SRC
+
+  #+RESULTS:
+  : Este buffer es README.org y tiene 12632 caracteres.
+* Funciones sobre Buffers
+** Conceptos
+** Ejemplos
+*** Ejemplo 1 - Obtener la ruta absoluta del buffer
   #+BEGIN_SRC elisp
     (buffer-file-name)
   #+END_SRC
 
   #+RESULTS:
   : /home/jelou/Documentos/git/aprende-elisp/test1.org
-
+*** Ejemplo 2 - Obtener el nombre del buffer y su extensión
   #+BEGIN_SRC elisp
     (buffer-name)
   #+END_SRC
 
   #+RESULTS:
   : test1.org
-
+*** Ejemplo 3 - Obtener el tamaño del buffer
   #+BEGIN_SRC elisp
     (buffer-size)
   #+END_SRC
 
   #+RESULTS:
   : 4953
-* Funciones
-  #+BEGIN_SRC elisp
-    (defun multiply-by-sevens (number)
-      "Multiply NUMBER by seven."
-      (* 7 number))
+* Funciones Interactivas
+** Conceptos
+   - Una función interactiva es aquella que podemos invocar desde el *minibuffer* con el atajo ~M-x~
+   - Se agrega en el cuerpo de la función la función ~(interactive "prefijo texto-opcional")~
+   - El *prefijo* de ~interactive~ indica el tipo de dato que tendrá como input/entrada
+** Invocar función interactiva desde el minibuffer
+   #+BEGIN_QUOTE
+   1) Pegar el código en un *buffer elisp*
+   2) Colocar el cursor dentro de la función definida con ~defun~
+   3) Para evaluarla presionar ~M-x eval-defun~
+   4) Para ejecutarla ~M-x nombre-de-la-funcion~
 
-    (multiply-by-sevens 3)
+   *Observación:* Recordá que con el atajo ~M-x~ se abre el *minibuffer*
+   #+END_QUOTE
+** Invocar función interactiva con atajos
+   #+BEGIN_QUOTE
+   1) Pegar el código en un *buffer elisp*
+   2) Definir el siguiente atajo ~(global-set-key (kbd "C-;") #'nombre-tu-funcion)~
+   3) Evaluar el atajo con ~M-x eval-defun~
+   4) Para ejecutarla presionar el atajo, en este caso ~C-;~
+   #+END_QUOTE
+** Ejemplos
+*** Ejemplo 1 - Definir una función interactiva que recibe una constante numérica entera
+  #+BEGIN_SRC elisp :exports both
+    ;; a "interactive" le pasamos por parámetro "n" como prefijo
+    ;; porque el parámetro que recibe la función es una constante numérica entera
+    ;; (si fuera un string osea literal cadena usaríamos "s")
+    (defun multiplicar-por-siete(numero)
+      "Multiplicar `numero` por siete"
+      (interactive "nIngrese el número:")
+      (message "El resultado es %d" (* 7 numero)))
+
+  #+END_SRC
+*** Ejemplo 2 - Definir una función interactiva que recibe un literal cadena (string)
+  #+BEGIN_SRC elisp :exports both
+    ;; a "interactive" le pasamos por parámetro "s" como prefijo
+    ;; porque el parámetro que recibe la función es un literal cadena (string)
+    (defun saludar-por-nombre(nombre)
+      "Saluda personas por su nombre"
+      (interactive "sIngrese su nombre:")
+      (message "Hola! Tu nombre es %s!" nombre))
+  #+END_SRC
+* Funciones
+** Conceptos
+   - La sintáxis es ~(defun nombre-de-funcion(parametro1 parametro2 ...) "breve descripción" (funcion1) (funcion2) ...)~
+   - Está delimitada por paréntesis
+   - La estructura para definir una función es
+     1) Comienza con la keyword ~defun~
+     2) Seguido del identificador/nombre y de los parámetros delimitados por paréntesis ~(param1 param2)~
+     3) Seguido *opcionalmente* de una breve descripción delimitada por comillas dobles ~""~
+     4) Seguido del cuerpo de la función (agregamos las funciones que queramos delimitadas cada una por paréntesis)
+** Ejemplos
+*** Ejemplo 1 - Una función hello-world que no recibe parámetros
+  #+BEGIN_SRC elisp :exports both
+    (defun hola-mundo()
+      "Esta función sólo saluda"
+      (message "Hola Mundo!"))
+
+    (hola-mundo)
+  #+END_SRC
+*** Ejemplo 2 - Definir una función arimética que recibe un parámetro
+  #+BEGIN_SRC elisp :exports both
+    (defun multiplicar-por-siete (numero)
+      "Esto es un comentario, y describimos que multiplica a `numero' por siete"
+      (* 7 numero))
+
+    (multiplicar-por-siete 3)
   #+END_SRC
 
   #+RESULTS:
   : 21
-
-  #+BEGIN_SRC elisp
-    (defun multiply-by-seven (number)       ; Interactive version.
-      "Multiply NUMBER by seven."
-      (interactive "p")
-      (message "The result is %d" (* 7 number)))
-
-    (multiply-by-seven)
-  #+END_SRC
-
-  #+RESULTS:
-  : The result is 14
-
+*** Ejemplo 3 - Parámetros de una función usados por otras funciones invocadas en ese scope
   #+BEGIN_SRC elisp
     (defun a-exists-only-in-my-body (a)
       (other-function))
@@ -163,88 +528,109 @@
     (defun other-function ()
       (message "I see `a', its value is %s" a))
 
-    (a-exists-only-in-my-body t)
+    (a-exists-only-in-my-body 5)
   #+END_SRC
 
   #+RESULTS:
-  : I see ‘a’, its value is t
+  : I see ‘a’, its value is 5
+*** Ejemplo 4 - Definir la Función Recursiva Factorial
+  #+BEGIN_SRC elisp :exports both
+    ;; - Definimos una función recursiva porque se llama a si misma
+    ;; - Caso base: Si n es cero, se corta la recursividad
+    ;; - Caso recursivo: Si n no es cero, multiplica n veces el valor por valor-1
+    (defun factorial (n)
+      (if (= n 0)
+          1
+        (* n (factorial (- n 1)))))
 
-  #+BEGIN_SRC elisp
-    (defun some-other-function ()
-      (message "I see `c', its value is: %s" c))
-
-    (defvar c t)
-
-    (let ((a "I'm lexically bound")
-          (c "I'm special and therefore dynamically bound"))
-      (some-other-function)
-      (message "I see `a', its values is: %s" a))
+    (factorial 5)
   #+END_SRC
 
   #+RESULTS:
-  : I see ‘a’, its values is: I'm lexically bound
+  : 120
 
-  1. https://www.gnu.org/software/emacs/manual/html_node/eintr/defun.html
-* Argumentos
+** Referencias
+*** Referencias Oficiales
+  1. [[https://www.gnu.org/software/emacs/manual/html_node/eintr/defun.html][The defun macro (gnu.org)]]
+* Función concat
+** Conceptos
+  - La sintáxis es ~(concat param1 param2 ...)~
+  - Retorna un literal cadena (string)
+  - Los parámetros pueden ser tipos primitivos (strings, enteros, ..) ó funciones
+** Ejemplos
+*** Ejemplo 1 - Concatenar Strings
   #+BEGIN_SRC elisp
-    ;; concatenamos cadenas
     (concat "hola" "como")
   #+END_SRC
 
   #+RESULTS:
   : holacomo
-
+*** Ejemplo 2 - Concatenar resultados de funciones
   #+BEGIN_SRC elisp
-    ;; pasamos valores de funciones como argumentos
+    ;; pasamos funciones como argumentos
     ;; el (+ 1 2) es similar a haskell
-    (concat "hola " (number-to-string (+ 1 2)) " jo")
+    (concat "hola " (number-to-string (+ 1 2)) " xd")
   #+END_SRC
 
   #+RESULTS:
-  : hola3jo
-* Message
-  #+BEGIN_SRC elisp
+  : hola 3 xd
+** Referencias
+*** Referencias Oficiales
+   2. [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Creating-Strings.html][Creating Strings (gnu.org)]]
+* Función message
+** Conceptos
+  - La sintáxis es ~(message string argumento1 argumento2 ...)~
+  - Imprime un string en el *minibuffer*
+** Ejemplos
+*** Ejemplo 1 - Imprimir un hola-mundo
+  #+BEGIN_SRC elisp :exports both
     ;; funciona como un echo o print
-    (message "hola")
+    (message "hola mundo")
   #+END_SRC
 
   #+RESULTS:
-  : hola
+  : hola mundo
+*** Ejemplo 2 - Pasar argumentos y mostrarlos con especificadores de formato
+  #+BEGIN_SRC elisp :exports both
+    ;; usamos el %s como especificador de formato que representa un string
+    (message "el nombre del buffer es %s" (buffer-name))
+  #+END_SRC
 
+  #+RESULTS:
+  : el nombre del buffer es README.org
+*** Ejemplo 3 - Pasar argumentos y mostrarlos con especificadores de formato
   #+BEGIN_SRC elisp
-    (message "hola %s" (buffer-name))
+    ;; - es un formato similar al printf de C
+    ;; - usamos los %s y %d como especificadores de formato
+    ;; - %s para los literales cadena (string)
+    ;; - %d para las constantes numéricas enteras
+    (message "el nombre de buffer es %s y 100+100 es %d" (buffer-name) (+ 100 100))
   #+END_SRC
 
   #+RESULTS:
-  : hola test1.org
-
-  #+BEGIN_SRC elisp
-    ;; se le puede pasar parámetros
-    ;; y usar como el printf de c
-    (message "hola %s mi edad es %d" (buffer-name) (+ 10 10))
-  #+END_SRC
-
-  #+RESULTS:
-  : hola test1.org mi edad es 20
-
-* If
+  : el nombre de buffer es README.org y 100+100 es 200
+* Sentencia de Selección - If
+** Conceptos
+   - La sintáxis para un *condicional simple* es ~(if (condicion) operacionIF)~
+   - La sintáxis para un *condicional compuesto* es ~(if (condicion) operacionIF operacionELSE)~
+** Ejemplos
+*** Ejemplo 1 - Condicional Simple y la funciones (>) y (message)
   #+BEGIN_SRC elisp
     ;; el (> 5 4) es como haskell, 5 es el primer agumento y 4 el segundo
 
-    (if(> 5 4)             ;; parte si..
-        (message "shit"))  ;; parte entonces
+    (if(> 5 4)             ;; criterio
+        (message "wow, 5 es mayor que 4!"))  ;; resultado si se cumple
   #+END_SRC
 
   #+RESULTS:
-  : shit
-
+  : wow, 5 es mayor que 4!
+*** Ejemplo 2 - Definiendo una función con un Condicional Compuesto y las funciones (equal) y (message)
   #+BEGIN_SRC elisp
     (defun tipo-animal (tipo)                      ;; defun nombre (lista-argumentos)
-      "Imprime un mensaje segun el tipo de animal" ;; "documentación"
+      "Imprime un mensaje segun el tipo de animal" ;; "documentación", breve descripción de la función
       (if (equal tipo 'fiera)                      ;; cuerpo parte-si
-          (message "Cuidado! Corré!")              ;; cuerpo parte-entonces
-          (message "No es peligroso")))            ;; cuerpo parte-resto
-
+          (message "Cuidado! Corré!")              ;; cuerpo parte-then
+          (message "No es peligroso")))            ;; cuerpo parte-else
 
     (tipo-animal 'fiera)
     (tipo-animal 'cebrita)
@@ -252,20 +638,7 @@
 
   #+RESULTS:
   : No es peligroso
-
-* Varios
-  #+BEGIN_SRC elisp
-    ;; let tiene una lista de dos elementos (nombre1 valor1) (nombre2 valor2)
-    ;; "en este caso valor1 y valor2 son funciones que retoran datos del buffer actual"
-    ;; seguido de un cuerpo que es (message )
-    (let ((foo (buffer-name))
-          (bar (buffer-size)))
-      (message "Este buffer es %s y tiene %d caracteres." foo bar))
-  #+END_SRC
-
-  #+RESULTS:
-  : Este buffer es test1.org y tiene 5993 caracteres.
-
+* Otros
   #+BEGIN_SRC elisp
     ;; (point-min) devuelve la posición del cursor al principio de buffer
     ;; (point) devuelve la posición actual del cursor
@@ -285,9 +658,6 @@
     (hello "you")
   #+END_SRC
 
-  #+RESULTS:
-
-* Practicando
   #+BEGIN_SRC elisp
     (setq invitados '("carlos" "pepe"))
 
@@ -303,13 +673,37 @@
 
   #+RESULTS:
   | carlos | pepe |
+
 * Referencias
 ** Referencias Oficiales
-  4. https://www.gnu.org/software/emacs/manual/elisp.html
-  5. https://www.gnu.org/software/emacs/manual/html_node/eintr/
+  1. [[https://www.gnu.org/software/emacs/manual/elisp.html][GNU Emacs Lisp Reference Manual (gnu.org)]]
+  2. [[https://graphviz.org/doc/info/attrs.html][Attributes Graphviz (graphviz.org)]]
 ** Referencias Extraoficiales
-  1. https://www.davidam.com/docu/emacs-lisp-intro-es.html
-  2. https://learnxinyminutes.com/docs/es-es/elisp-es/
-  3. https://with-emacs.com/posts/tutorials/almost-all-you-need-to-know-about-variables/
-  4. https://www.iteramos.com/pregunta/10725/-consejos-para-aprender-elisp-
-  5. https://poesiabinaria.net/2017/09/aprende-utilizar-emacs-abre-mente-desdobla-tus-dedos-trabaja-gusto-se-productivo/
+  1. [[https://caiorss.github.io/Emacs-Elisp-Programming/Elisp_Programming.html][Elisp Programming (caiaorss.github.io)]]
+  2. [[https://www.davidam.com/docu/emacs-lisp-intro-es.html][Programación en Emacs Lisp (davidam.com)]]
+  3. [[http://xahlee.info/emacs/emacs/elisp_idioms_prompting_input.html][Elisp, get user input (xahlee.info)]]
+  4. [[https://learnxinyminutes.com/docs/es-es/elisp-es/][Learn elisp in Y minutes (learnxinminutes.com)]]
+  5. [[https://with-emacs.com/posts/tutorials/almost-all-you-need-to-know-about-variables/][All you need to know about variables (with-emacs.com)]]
+  6. [[https://www.iteramos.com/pregunta/10725/-consejos-para-aprender-elisp-][Consejos para aprender elisp (iteramos.com)]]
+  7. [[https://poesiabinaria.net/2017/09/aprende-utilizar-emacs-abre-mente-desdobla-tus-dedos-trabaja-gusto-se-productivo/][Aprende a usar emacs (poesiabinaria.net)]]
+  8. [[https://github.com/susam/emfy][Emacs setup for general purpose editing/programming (github.com/susam)]]
+** Issues
+  1. [[https://unix.stackexchange.com/questions/47724/how-to-modify-write-permission-on-current-buffer-in-emacs][How to modify write permission on current buffer (unix.stackexchange.com)]]
+** Pendientes
+  #+BEGIN_COMMENT
+  te quedaste en el (1) recien empezabas por *Anonymous Functions / Lambda Function*, es muuuy completo
+  #+END_COMMENT
+  
+  1. https://github.com/caiorss/Emacs-Elisp-Programming/blob/master/Elisp_Programming.org
+  2. https://github.com/caiorss/Emacs-Elisp-Programming
+  3. https://github.com/chrisdone/elisp-guide#debugging
+  4. https://github.com/emacs-evil/evil/blob/master/evil-commands.el
+  5. google: elisp debugger
+  6. https://caiorss.github.io/Emacs-Elisp-Programming/Elisp_Programming.html#sec-3-7-1
+  7. https://www.davidam.com/docu/emacs-lisp-intro-es.html
+  8. https://www.gnu.org/software/emacs/manual/html_node/elisp/Mapping-Functions.html
+  9. https://github.com/manu-xdev/emacs-from-scratch
+  10. https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Lisp-03.org
+  11. https://wilkesley.org/~ian/xah/emacs/elisp_idioms_prompting_input.html
+  12. http://xahlee.info/emacs/emacs/elisp_interactive_form.html
+  13. https://www.youtube.com/watch?v=6tLbEtBaQfc
