@@ -638,6 +638,132 @@
 
   #+RESULTS:
   : No es peligroso
+* Función Anónima Vs Función Lambda
+** Conceptos
+  - La sintáxis para definir una función lambda es ~(lambda (param1 param2 ..) (cuerpo))~
+  - Podemos aplicar una función lambda con ~funcall~ (es opcional si es una lambda)
+** Ejemplos
+*** Ejemplo 1 - Función Lambda que recibe un parámetro y lo incrementa en 1
+   #+BEGIN_SRC elisp
+     ;; definimos la función lambda, pero no le pasamos parámetros
+     ;; (así no le estaríamos dando uso, porque no podemos invocarla luego..)
+     (lambda (x) (+ 1 x))
+
+     ;; definimos la función lambda y le pasamos parámetros
+
+     ;; le pasamos el 1 por parámetro
+     (lambda (x) (+ 1 x) 1)
+
+     ;; le pasamos el 2 por parámetro
+     (lambda (x) (+ 1 x) 2)
+
+     ;; le pasamos el 3 por parámetro
+     (lambda (x) (+ 1 x) 3)
+   #+END_SRC
+*** Ejemplo 2 - Función Lambda que obtiene el doble
+   #+BEGIN_SRC elisp
+     ;; le pasamos el 2 por parámetro, la evaluará como (* 2 2)
+     (lambda (x) (* 2 x) 2)
+
+     ;; le pasamos el 4 por parámetro, la evaluará como (* 2 4)
+     (lambda (x) (* 2 x) 4)
+   #+END_SRC
+*** Ejemplo 3 - Aplicando Función Lambda con funcall
+   #+BEGIN_SRC elisp
+     ;; aplicamos una función lambda con funcall
+     ;; y le pasamos el 5 por parámetro
+     (funcall (lambda (x) (+ x 1)) 5)
+
+     ;; es opcional usar `funcall' al aplicar una función lambda,
+     ;; en este caso el resultado será el mismo usarlo o no
+     ((lambda (x) (+ x 1)) 5)
+
+     ;; Cuando usamos `funcall'..?
+     ;; Si es una función nombrada (osea fue definida con `defun') que es pasada por parámetro
+     ;; y que se intenta aplicar/llamar/invocar en el cuerpo de esa función
+     ;; que la recibió por parámetro
+   #+END_SRC
+*** Ejemplo 4 - Definir variables que contienen lambdas
+   #+BEGIN_SRC elisp
+     ;; definimos una variable `sumar1' y le asignamos el resultado de la lambda
+     (defvar sumar1 (lambda (x) (+ x 1)))
+     ;; como la variable `sumar1' contiene una función, la llamamos con `funcall'
+     (funcall sumar1 5)
+   #+END_SRC
+*** Ejemplo 5 - Mapear una lista y aplicar una función lambda a cada elemento
+   #+BEGIN_SRC elisp
+     ;; Invocamos la función `mapcar' que recibe dos parámetros
+     ;; 1º parámetro: una función lambda (se aplicará a cada elemento)
+     ;; 2º parámetro: una lista de constantes enteras
+     (mapcar (lambda (x) (+ 1 x)) '(1 2 3 4))
+   #+END_SRC
+* Funciones por parámetro
+** Conceptos
+   - Si pasamos por parámetro una función en una invocación,
+     entonces le agregamos el prefijo ~#'~ al nombre de la función que es parámetro
+   - Si estamos definiendo una función con ~defun~ y queremos aplicar un parámetro que es función usamos ~funcall~
+     (/la llamada a funcall sería sólo dentro del cuerpo de la función que la recibe como parámetro/)
+
+   #+BEGIN_QUOTE
+   Si invocamos una función que recibe por parámetro funciones la sintáxis es
+   ~(funcion-invocada #'nombre-funcion1 #'nombre-funcion2 ... param1 param2 ...)~
+   
+   Si definimos una función con ~defun~ que recibe por parámetro funciones,
+   la sintáxis en el cuerpo de la función para invocar esos parámetros que son función es
+   ~(funcall nombre-funcion param1 param2 ...)~
+   #+END_QUOTE
+** Ejemplos
+*** Ejemplo 1 - Definir funciones que tienen por parámetro Funciones
+   #+BEGIN_SRC elisp
+     ;; - Definimos una función que recibe por parámetro dos funciones y un valor
+     ;; - Usamos `funcall' en el cuerpo de una función para invocar/llamar/aplicar
+     ;; los parámetros que son función
+     (defun sumar-funciones (f1 f2 x)
+       (+ (funcall f1 x) (funcall f2 x)))
+
+     ;; - Definimos otra función que recibe por parámetro dos funciones y un valor
+     ;; - Si no usamos `funcall' en los parámetros que son función, entonces lanzará un error
+     (defun multiplicar-funciones (f1 f2 x)
+       (* (funcall f1 x) (funcall f2 x)))
+   #+END_SRC
+*** Ejemplo 2 - Aplicar/invocar funciones que tienen por parámetro Funciones Lambda
+   #+BEGIN_SRC elisp
+     ;; Definimos una función que recibe por parámetro dos funciones y un valor como tercer parámetro
+     (defun sumar-funciones (f1 f2 x)
+       (+ (funcall f1 x) (funcall f2 x)))
+
+     ;; - Aplicamos/invocamos/llamamos la función `sumar-funciones'
+     ;; y le pasamos por parámetro dos funciones lambda y el valor 5 como tercer parámetro
+     (sumar-funciones (lambda (x) (+ 1 x))
+                      (lambda (x) (* 2 x))
+                      5)
+
+     ;; - Cuando invocamos una función y pasamos por parámetro una función nombrada,
+     ;; necesitamos agregar el prefijo #' al nombre de la función nombrada
+     (sumar-funciones (lambda (x) (+ x 1))  #'elDoble 2)
+   #+END_SRC
+*** Ejemplo 3 - Aplicar funciones que tienen por parámetro Funciones nombradas
+   #+BEGIN_SRC elisp
+     ;; Definimos dos funciones básicas, que pasaremos por parámetro
+     ;; (ambas reciben reciben un único parámetro)
+     (defun incrementarEn1 (n) (+ 1 n))
+     (defun elDoble(n) (* 2 n))
+
+     ;; Aplicamos/invocamos las funciones para probar que se evalúan bien
+     (incrementarEn1 5)
+     (elDoble 5)
+
+     ;; - Aplicamos/invocamos una función que recibe por parámetro dos funciones y el valor 2
+     ;; - Los nombres funciones nombradas deben comenzar con el prefijo #'
+     ;; (pero sólo cuando invocamos una función, en la definición usamos funcall)
+     (sumar-funciones #'incrementarEn1 #'elDoble 2)
+
+     ;; probamos con otra función que también recibe dos funciones y un valor
+     (multiplicar-funciones #'incrementarEn1 #'elDoble 2)
+
+     ;; sólo para las funciones nombradas necesitamos el prefijo #'
+     (sumar-funciones (lambda (x) (+ x 1))  #'elDoble 2)
+   #+END_SRC
 * Otros
   #+BEGIN_SRC elisp
     ;; (point-min) devuelve la posición del cursor al principio de buffer
@@ -691,7 +817,7 @@
   1. [[https://unix.stackexchange.com/questions/47724/how-to-modify-write-permission-on-current-buffer-in-emacs][How to modify write permission on current buffer (unix.stackexchange.com)]]
 ** Pendientes
   #+BEGIN_COMMENT
-  te quedaste en el (1) recien empezabas por *Anonymous Functions / Lambda Function*, es muuuy completo
+  Retomar el link (1) con *Variadic Functions*
   #+END_COMMENT
   
   1. https://github.com/caiorss/Emacs-Elisp-Programming/blob/master/Elisp_Programming.org
