@@ -1,5 +1,6 @@
 #+STARTUP: inlineimages
-* Comandos de Documentación
+* Documentación
+** Comandos
   |-----------------------------------+---------------------------------------------|
   | Comando                           | Descripción                                 |
   |-----------------------------------+---------------------------------------------|
@@ -7,6 +8,16 @@
   | ~C-h b~ ó ~M-x describe-bindings~ | Lista todos los atajos (de todos los modos) |
   | ~C-h f~ ó ~M-x describe-function~ | Muestra la documentación de una función     |
   |-----------------------------------+---------------------------------------------|
+** Referencias
+*** Referencias Oficiales
+   1. [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Documentation-Tips.html][Documentation Tips (gnu.org)]]
+   2. [[https://www.emacswiki.org/emacs/DocString][Doc String (emacswiki.org)]]
+*** Referencias Extraoficiales
+   1. [[https://kitchingroup.cheme.cmu.edu/blog/2017/03/22/A-better-defun-for-emacs-lisp/][A better defun for emacs lisp (kitchingroup.cheme.cmu.edu)]]
+   2. [[http://xahlee.info/emacs/emacs/inline_doc.html][Doc String Markup (xahlee.info)]]
+   3. [[https://wilkesley.org/~ian/xah/emacs/inline_doc.html][Inline Docstring Markup (wilkesley.org)]]
+   4. [[https://www.askpython.com/python/python-docstring][Python Docstring (askpython.com)]]
+   5. [[https://dev.to/highflyer910/what-is-a-python-docstring-44eo][What is Python docstring? (dev.to)]]
 * Scratch Buffer + Interprete IELM
 ** Conceptos
    - El *Scratch Buffer* se puede usar en conjunto con el *Interprete IELM*
