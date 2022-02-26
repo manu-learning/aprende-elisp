@@ -16,21 +16,22 @@
   1. [[https://unix.stackexchange.com/questions/47724/how-to-modify-write-permission-on-current-buffer-in-emacs][How to modify write permission on current buffer (unix.stackexchange.com)]]
 ** Pendientes
   #+BEGIN_COMMENT
-  Retomar el link (1) con *Variadic Functions*
+  Retomar el link (1) con *Functions with Property List argument*
   #+END_COMMENT
   
   1. https://github.com/caiorss/Emacs-Elisp-Programming/blob/master/Elisp_Programming.org
   2. https://github.com/caiorss/Emacs-Elisp-Programming
   3. https://alhassy.github.io/ElispCheatSheet/
-  4. https://developpaper.com/emacs-lisp/
-  5. https://github.com/chrisdone/elisp-guide#debugging
-  6. https://github.com/emacs-evil/evil/blob/master/evil-commands.el
-  7. google: elisp debugger
-  8. https://caiorss.github.io/Emacs-Elisp-Programming/Elisp_Programming.html#sec-3-7-1
-  9. https://www.davidam.com/docu/emacs-lisp-intro-es.html
-  10. https://www.gnu.org/software/emacs/manual/html_node/elisp/Mapping-Functions.html
-  11. https://github.com/manu-xdev/emacs-from-scratch
-  12. https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Lisp-03.org
-  13. https://wilkesley.org/~ian/xah/emacs/elisp_idioms_prompting_input.html
-  14. http://xahlee.info/emacs/emacs/elisp_interactive_form.html
-  15. https://www.youtube.com/watch?v=6tLbEtBaQfc
+  4. https://mullikine.github.io/posts/currying-in-emacs-lisp/
+  5. https://developpaper.com/emacs-lisp/
+  6. https://github.com/chrisdone/elisp-guide#debugging
+  7. https://github.com/emacs-evil/evil/blob/master/evil-commands.el
+  8. google: elisp debugger
+  9. https://caiorss.github.io/Emacs-Elisp-Programming/Elisp_Programming.html#sec-3-7-1
+  10. https://www.davidam.com/docu/emacs-lisp-intro-es.html
+  11. https://www.gnu.org/software/emacs/manual/html_node/elisp/Mapping-Functions.html
+  12. https://github.com/manu-xdev/emacs-from-scratch
+  13. https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Lisp-03.org
+  14. https://wilkesley.org/~ian/xah/emacs/elisp_idioms_prompting_input.html
+  15. http://xahlee.info/emacs/emacs/elisp_interactive_form.html
+  16. https://www.youtube.com/watch?v=6tLbEtBaQfc
