@@ -312,7 +312,7 @@
 * Funciones Variádicas
 ** Conceptos
   - Una *función variádica* es aquella que recibe un número indefinido de parámetros
-  - Al definir la función, usamos el prefijo ~&rest~ seguido del identificador que representa a lista de parámetros
+  - Al definir la función, usamos como prefijo la *keyword* ~&rest~ seguido del identificador que representa a lista de parámetros
   - Al definir la función, en el cuerpo usamos la función ~apply~ si queremos invocar una función y pasarle la lista de parámetros
 
   #+BEGIN_QUOTE
@@ -368,6 +368,31 @@
      (funcion-loca 2 1 2 3 4)
      (funcion-loca 2 1 2 3 4 5)
    #+END_SRC
+** Referencias
+*** Referencias Oficiales
+   1. [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Argument-List.html][Argument List (gnu.org)]]
+   2. [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Calling-Functions.html][Calling functions (gnu.org)]]
+*** Referencias Issues
+   1. [[https://stackoverflow.com/questions/4970111/what-does-rest-mean-in-elisp/4970594][What does &rest mean? (stackoverflow.com)]]
+* Funciones con parámetros opcionales
+** Conceptos
+  - Usamos como prefijo la *keyword* ~&optional~ y los parámetros que le sigan serán opcionales
+** Ejemplos
+*** Ejemplo 1
+   #+BEGIN_SRC elisp
+     (defun imprimir-empleado (nombre &optional apellido edad)
+       (if edad
+           (message "Su nombre completo es %s %s y tiene %d años" nombre apellido edad)
+         (message "Su nombre completo es %s %s" nombre apellido)))
+
+     (imprimir-empleado "carlitos")
+     (imprimir-empleado "carlitos" "fernandez" 101)
+   #+END_SRC
+** Referencias
+*** Referencias Oficiales
+   1. [[https://www.gnu.org/software/emacs/manual/html_node/eintr/Optional-Arguments.html][Elisp - Optional Arguments (gnu.org)]]
+*** Referencias Extraoficiales
+   1. [[http://xahlee.info/emacs/emacs/elisp_optional_params.html][Function Optional Parameters (xahlee.info)]]
 * Función Funcall Vs Función Apply
 ** Conceptos
 ** Ejemplos
