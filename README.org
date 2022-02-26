@@ -21,14 +21,16 @@
   
   1. https://github.com/caiorss/Emacs-Elisp-Programming/blob/master/Elisp_Programming.org
   2. https://github.com/caiorss/Emacs-Elisp-Programming
-  3. https://github.com/chrisdone/elisp-guide#debugging
-  4. https://github.com/emacs-evil/evil/blob/master/evil-commands.el
-  5. google: elisp debugger
-  6. https://caiorss.github.io/Emacs-Elisp-Programming/Elisp_Programming.html#sec-3-7-1
-  7. https://www.davidam.com/docu/emacs-lisp-intro-es.html
-  8. https://www.gnu.org/software/emacs/manual/html_node/elisp/Mapping-Functions.html
-  9. https://github.com/manu-xdev/emacs-from-scratch
-  10. https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Lisp-03.org
-  11. https://wilkesley.org/~ian/xah/emacs/elisp_idioms_prompting_input.html
-  12. http://xahlee.info/emacs/emacs/elisp_interactive_form.html
-  13. https://www.youtube.com/watch?v=6tLbEtBaQfc
+  3. https://alhassy.github.io/ElispCheatSheet/
+  4. https://developpaper.com/emacs-lisp/
+  5. https://github.com/chrisdone/elisp-guide#debugging
+  6. https://github.com/emacs-evil/evil/blob/master/evil-commands.el
+  7. google: elisp debugger
+  8. https://caiorss.github.io/Emacs-Elisp-Programming/Elisp_Programming.html#sec-3-7-1
+  9. https://www.davidam.com/docu/emacs-lisp-intro-es.html
+  10. https://www.gnu.org/software/emacs/manual/html_node/elisp/Mapping-Functions.html
+  11. https://github.com/manu-xdev/emacs-from-scratch
+  12. https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Lisp-03.org
+  13. https://wilkesley.org/~ian/xah/emacs/elisp_idioms_prompting_input.html
+  14. http://xahlee.info/emacs/emacs/elisp_interactive_form.html
+  15. https://www.youtube.com/watch?v=6tLbEtBaQfc
