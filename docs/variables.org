@@ -163,3 +163,38 @@
 
   #+RESULTS:
   : Este buffer es README.org y tiene 12632 caracteres.
+*** [DOING] Ejemplo 5
+   #+BEGIN_SRC elisp
+     ;; sólo devuelve el valor de una variable local
+     (let ((fuerza 100)
+           (nivel 1))
+       fuerza)
+
+     ;; devuelve la variable declarada como fuerza
+     ;; (no devuelve su valor)
+     (setq fuerza 500)
+     (let ((fuerza 100)
+           (nivel 1))
+       'fuerza)
+
+     ;; imprimimos el valor de las dos variables locales
+     (let ((fuerza 100)
+           (nivel 1))
+       (message "hola fuerza=%d nivel=%d" fuerza nivel))
+
+
+     (let ((data '((key1 . 4)
+                   (key2 . "tree"))))
+       (cdr (assoc 'key2 data)))
+
+     ;; definimos una variable qu le asignamos una lista de propiedades
+     (setq datos '(:clave1 4 :clave2 "tree"))
+     ;; definimos una variable local a `let' y le asignamos el valor
+     ;; de un elemento de la Lista de propiedades, buscandolo por su clave `clave1'
+     ;; luego sólo imprimimos su valor
+     (let ((dato1 (plist-get datos :clave1)))
+       (message "el valor del elemento es %s" dato1))
+   #+END_SRC
+** Referencias
+*** Referencias Issues
+   1. [[https://stackoverflow.com/questions/32802132/why-are-there-two-parentheses-after-let-in-emacs-lisp][Why are there two parentheses after let? (stackoverflow.com)]]
