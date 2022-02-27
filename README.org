@@ -14,9 +14,13 @@
   8. [[https://github.com/susam/emfy][Emacs setup for general purpose editing/programming (github.com/susam)]]
 ** Referencias de Issues
   1. [[https://unix.stackexchange.com/questions/47724/how-to-modify-write-permission-on-current-buffer-in-emacs][How to modify write permission on current buffer (unix.stackexchange.com)]]
+** Referencias Lisp
+  1. [[https://www.inf.utfsm.cl/~noell/PLP-UCV/apunte04.pdf][Intro Programación Funcional (inf.utfsm.cl)]]
+  2. [[http://www.lcc.uma.es/~iaic/LISP3.pdf][LISP Funciones (lcc.uma.es)]]
 ** Pendientes
   #+BEGIN_COMMENT
-  Retomar el link (1) con *Functions with Property List argument*
+  Retomar el link (1) con *Closures*
+  pd: quedaron cosas pendients de listas asociativas/de propiedades, let
   #+END_COMMENT
   
   1. https://github.com/caiorss/Emacs-Elisp-Programming/blob/master/Elisp_Programming.org
