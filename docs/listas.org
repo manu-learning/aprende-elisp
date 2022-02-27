@@ -1,0 +1,243 @@
+#+STARTUP: inlineimages
+* Función cons
+** Conceptos
+  - La función ~cons~ agrega un elemento a una lista
+  - El 1º parámetro será el elemento a agregar a la lista
+  - El 2º parámetro será la lista donde agregará los elementos
+** Ejemplos
+*** Ejemplo 1
+   #+BEGIN_SRC elisp
+     (cons 1 '(2))
+
+     (cons 1 (list 2 3 4))
+   #+END_SRC
+** Referencias
+*** Referencias Oficiales
+   1. [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Building-Lists.html][Building Lists (gnu.org)]]
+* Listas de Propiedades
+** Conceptos
+  - Son estructuras de datos similar a los registros/campos en otros lenguajes
+  - Persiste lo datos como clave/valor similar a un archivo json
+  - La funciones ~plist-put~ y ~plist-get~ comparan las claves de las propiedades usando la función ~eq~
+  - Con ~plist-get~ obtenemos una propiedad de la lista de propiedades, uno en particular
+  - Con ~plist-put~ busca una propiedad por su nombre/clave
+    - si la encuentra modfica el valor
+    - si no la encuentra, agrega su clave y valor
+
+
+  #+BEGIN_QUOTE
+  Para más información podemos evaluar lo siguiente ~(info "(elisp) Symbol Properties")~
+
+  Dejamos un extracto interesante de (gnu.org)
+  
+  A symbol whose name starts with a colon (‘:’) is called a keyword symbol.
+  These symbols automatically act as constants, and are normally used only
+  by comparing an unknown symbol with a few specific alternatives
+  
+  These symbols cannot be rebound, nor can their values be changed.
+  Any attempt to set or bind nil or t signals a setting-constant error.
+  
+  These constants are fundamentally different from the constants defined using the defconst special form 
+  A defconst form serves to inform human readers that you do not intend to change the value of a variable,
+  but Emacs does not raise an error if you actually change it.
+  #+END_QUOTE
+  - Al invocar la función  ;; cada elemento de la lista es del tipo :clave1 valor :clave2 valor
+** Ejemplos
+*** Ejemplo 1 - Diferentes maneras de definir Listas de propiedades
+   #+BEGIN_SRC elisp
+     ;; Definimos una variable `persona'
+     ;; y le asignamos una Lista de propiedades
+     (setq persona '(:nombre "carlos" :apellido "gimenez"))
+
+     ;; alternativa
+     (setq persona (list :nombre "carlos" :apellido "gimenez"))
+   #+END_SRC
+*** Ejemplo 2 - Crear/Modificar una Lista de propiedades
+   #+BEGIN_SRC elisp
+     ;; - definimos una variable y le asignamos una Lista de propiedades
+     ;; con 3 elementos tipo clave-valor
+     ;; - con `setq' es similar a usar `set' pero nos evitamos agregar
+     ;; el apóstrofe al nombre de la variable
+     (setq personajes '(hulk "bruce banner" deadpool "wade wislon " wolverine "james howlett"))
+
+     ;; Probamos definir variables con `setq' y `set' para que se vea la diferencia
+     (setq digimon "agumon")
+     (set 'pokemon "pikachu")
+
+     ;; Si evaluamos las variables, el resultado es el mismo
+     digimon
+     pokemon
+
+     ;; agregamos un elemento
+     (plist-put personajes 'iron-man "tony star")
+
+     ;; modificamos un elemento
+     (plist-put personajes 'iron-man "tony stark")
+
+     ;; - evaluamos la variable
+     ;; - no usamos paréntesis porque sólo sirven para las funciones
+     personajes
+   #+END_SRC
+*** Ejemplo 3 - Obtener el valor de un elemento por su clave/nombre
+   #+BEGIN_SRC elisp
+     ;; - en ambos ejemplos estamos creando una lista de propiedades
+     ;; y pasandola por parámetro, su ciclo de vida termina cuando
+     ;; termina de evaluarse cada función
+     ;; - quizás lo mejor sería que estuviera definida esa lista
+     ;; en otra linea y evitamos repetir lógica además de poder reutilizarla
+
+     ;; obtenemos el valor de la clave `nombre'
+     (plist-get '(:nombre "carlitos" :edad 5) 'nombre)
+
+     ;; obtenemos el valor de la clave `edad'
+     (plist-get '(nombre "carlitos" edad 5) 'edad)
+   #+END_SRC
+*** Ejemplo 4 - Crear listas de propiedades + Agregar/Modificar elementos (más detallado)
+   #+BEGIN_SRC elisp
+     ;; - definimos la lista de propiedades, de tres maneras
+     ;; 1º manera: podemos usar la función `list'
+     ;; 2º manera: podemos usar con el apóstrofe similar como con las variables
+     ;; pero seguido de los paréntesis
+     ;; 3º manera: aplica si usamos (list e1 e2 ..) ó '(e1 e2 ..)
+     ;; sólo cambiamos el símbolo de cada clave para identificarlas
+     (setq estudiante (list 'nombre "fede" 'edad 17))
+     (setq estudiante '('nombre "fede" 'edad 17))
+     (setq estudiante '(:nombre "fede" :edad 17)) ;; esta suele ser la más común
+
+     ;; con plist-put busca una propiedad por su clave
+     ;; - si la encuentra modfica el valor
+     ;; - si no la encuentra, agrega su clave y valor
+
+     estudiante ; evaluemos la variable para ver su valor
+
+     ;; buscamos la propiedad por su clave `edad', y modificamos su valor a `18'
+     (plist-put estudiante 'edad 18)
+     ;(setq estudiante(plist-put estudiante 'edad 18))
+
+     estudiante ; evaluemos la variable para ver su valor
+
+     ;; Agregamos un elemento
+     ;; - su nombre/clave es `amigos'
+     ;; - su valor es una lista que contiene dos elementos
+     (plist-put estudiante 'amigos '("carlitos" "pedrito"))
+     ;(setq estudiante (plist-put estudiante 'amigos '("carlitos" "pedrito")))
+
+     estudiante ; evaluemos la variable para ver su valor
+   #+END_SRC
+** Referencias
+*** Referencias Oficiales
+   1. [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Constant-Variables.html][Constant Variables (gnu.org)]]
+   2. [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Symbol-Type.html][Symbol type (gnu.org)]]
+   3. [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Plist-Access.html][Plist Access (gnu.org)]]
+   4. [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Plists-and-Alists.html][Property List and Association List (gnu.org)]]
+   5. [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Association-Lists.html][Association List (gnu.org)]]
+* [DOING] Listas Asociativas
+** Ejemplos
+*** Ejemplo 1
+   #+BEGIN_SRC elisp
+     (setq datos '((clave1 . 4) (clave2 . "hola")))
+     (cdr (assoc 'clave2 datos))
+   #+END_SRC
+*** Ejemplo 2
+   #+BEGIN_SRC elisp
+     (setq datos '((clave1 . 4) (clave2 . "hola")))
+     (let ((dato1 (plist-get datos :clave1)) (dato2 10))
+       (cdr (assoc 'clave1 datos)))
+
+     ;; definimos una variable
+     ;; y le asignamos una lista asociativa con dos elementos
+     (setq datos '((clave1 . 4) (clave2 . "hola")))
+
+     ;; definimos dos variables locales a `let'
+     ;; le asignamos el valor de los elementos de la lista asociativa
+     ;; y luego sólo devolvemos el valor del primer elemento
+     ;; (no tiene mucho sentido que digamos, es sólo para probar por ahora)
+     (let ((dato1 (plist-get datos :clave1))
+           (dato2 (plist-get datos :clave2)))
+       (cdr (assoc 'clave1 datos)))
+   #+END_SRC
+** Referencias
+*** Referencias Oficiales
+   1. [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Association-Lists.html][Association Lists (gnu.org)]]
+*** Referencias Extraoficiales
+   1. [[https://kitchingroup.cheme.cmu.edu/blog/2017/04/16/A-callable-plist-data-structure-for-Emacs/][A callable plist data structure (kitchingroup.cheme.cmu.edu)]]
+   2. [[https://sobrelisp.blogspot.com/2013/05/mas-tipos-de-datos-lisp.html][Lisp Tipos de datos (sobrelisp.blogspot.com)]]
+* [DOING] Lista de Propiedades y Lista Asociativas
+** Conceptos
+** Ejemplo
+*** Ejemplo 1
+   #+BEGIN_SRC elisp
+     ;; Definimos una variable `persona'
+     ;; y le asignamos una Lista de propiedades
+     (setq persona '(:nombre "carlos" :apellido "gimenez"))
+
+     ;; alternativa
+     (setq persona (list :nombre "carlos" :apellido "gimenez"))
+
+     ;; - Definimos dos variables locales a let,
+     ;; y le asignamos un elemento de la lista de propiedades
+     ;; - Devolvemos una lista con los mismos atributos
+     (let ((nombre (plist-get persona :nombre))
+           (apellido (plist-get persona :apellido)))
+       (list
+        (cons 'nombre nombre)
+        (cons 'apellido apellido)))
+   #+END_SRC
+*** Ejemplo 2 - Función que recibe una Lista de propiedades y devuelve una Lista Asociativa
+   #+BEGIN_SRC elisp
+     ;; 1. Usamos `let' para definir varias variables
+     ;; son variables locales, viven sólo dentro de ese ámbito/scope en let
+     ;; Ej. (let ((var1 valor) (var2 valor) ...) (cuerpo donde usamos esas variables))
+     ;;
+     ;; 2. Usamos `plist-get' para obtener un elemento de la lista de propiedades
+     ;;
+     ;; 3. Usamos `list' para crear una lista con las variables definidas
+     ;; y le asociamos una variable con el mismo nombre quedando (clave . valor)
+     ;; donde clave asociada es la variable declarada con el apóstrofe
+     ;; (el resultado será una lista con elementos asociados como (clave . valor)
+     ;;
+     ;; - al usar el apostrofe estamos declarando una variable)
+     ;; - al usar `cons' estamos agregando un elemento en una lista
+     ;; (el 1º parámetro suele ser el elemento, y el 2º la lista)
+     (defun registrar-proyecto (&rest propiedades)
+       "Registrar un proyecto.
+
+       Los parámetros que recibe:
+       NOMBRE el nombre del proyecto principal en la raíz del dirctorio
+       PATH se especifíca la ruta donde esta el código fuente del proyecto
+       LENGUAJE se especifíca que lenguaje de programación se usa
+       BUILD se especifíca el comando para construir el proyecto
+       RUN se especifíca el comando para iniciar el proyecto
+       TESTS se especifíca el comando para correr las pruebas unitarias"
+       (let ((nombre (plist-get propiedades :nombre))
+             (path (plist-get propiedades :path))
+             (lenguaje (plist-get propiedades :lenguaje))
+             (build (plist-get propiedades :build))
+             (run (plist-get propiedades :run))
+             (tests (plist-get propiedades :tests)))
+         (list
+          (cons 'nombre nombre)
+          (cons 'path path)
+          (cons 'lenguaje lenguaje)
+          (cons 'build build)
+          (cons 'run run)
+          (cons 'tests tests))))
+
+     ;; Invocamos la función y le pasamos por parámetro la Lista de propiedades
+     ;; cada elemento de la lista es del tipo :clave1 valor :clave2 valor
+     (registrar-proyecto
+      :nombre "manu-games"
+      :path "usr/games/manu-games"
+      :lenguaje "javascript"
+      :build "npm run build"
+      :run "gulp --production"
+      :tests "npm run tests")
+
+     (registrar-proyecto
+      :nombre "manu-docs"
+      :path "usr/app/manu-docs"
+      :lenguaje "javascript"
+      :build "make build"
+      :run "make start"
+      :tests "make tests")
+   #+END_SRC
