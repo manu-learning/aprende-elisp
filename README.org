@@ -25,17 +25,20 @@
   
   1. https://github.com/caiorss/Emacs-Elisp-Programming/blob/master/Elisp_Programming.org
   2. https://github.com/caiorss/Emacs-Elisp-Programming
-  3. https://alhassy.github.io/ElispCheatSheet/
-  4. https://mullikine.github.io/posts/currying-in-emacs-lisp/
-  5. https://developpaper.com/emacs-lisp/
-  6. https://github.com/chrisdone/elisp-guide#debugging
-  7. https://github.com/emacs-evil/evil/blob/master/evil-commands.el
-  8. google: elisp debugger
-  9. https://caiorss.github.io/Emacs-Elisp-Programming/Elisp_Programming.html#sec-3-7-1
-  10. https://www.davidam.com/docu/emacs-lisp-intro-es.html
-  11. https://www.gnu.org/software/emacs/manual/html_node/elisp/Mapping-Functions.html
-  12. https://github.com/manu-xdev/emacs-from-scratch
-  13. https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Lisp-03.org
-  14. https://wilkesley.org/~ian/xah/emacs/elisp_idioms_prompting_input.html
-  15. http://xahlee.info/emacs/emacs/elisp_interactive_form.html
-  16. https://www.youtube.com/watch?v=6tLbEtBaQfc
+  3. http://www.togores.net/vl/curso/lisp/bases
+  4. https://www.cs.us.es/~jalonso/publicaciones/1991-Lisp.pdf
+  5. https://alhassy.github.io/ElispCheatSheet/
+  6. https://developpaper.com/emacs-lisp/
+  7. https://mullikine.github.io/posts/currying-in-emacs-lisp/
+  8. https://developpaper.com/emacs-lisp/
+  9. https://github.com/chrisdone/elisp-guide#debugging
+  10. https://github.com/emacs-evil/evil/blob/master/evil-commands.el
+  11. google: elisp debugger
+  12. https://caiorss.github.io/Emacs-Elisp-Programming/Elisp_Programming.html#sec-3-7-1
+  13. https://www.davidam.com/docu/emacs-lisp-intro-es.html
+  14. https://www.gnu.org/software/emacs/manual/html_node/elisp/Mapping-Functions.html
+  15. https://github.com/manu-xdev/emacs-from-scratch
+  16. https://github.com/daviwil/emacs-from-scratch/blob/master/show-notes/Emacs-Lisp-03.org
+  17. https://wilkesley.org/~ian/xah/emacs/elisp_idioms_prompting_input.html
+  18. http://xahlee.info/emacs/emacs/elisp_interactive_form.html
+  19. https://www.youtube.com/watch?v=6tLbEtBaQfc
