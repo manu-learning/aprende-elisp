@@ -535,3 +535,73 @@
    1. [[http://xahlee.info/emacs/emacs/elisp_association_list.html][Elisp Association List (xahlee.info)]]
    2. [[https://kitchingroup.cheme.cmu.edu/blog/2017/04/16/A-callable-plist-data-structure-for-Emacs/][A callable plist data structure (kitchingroup.cheme.cmu.edu)]]
    3. [[https://sobrelisp.blogspot.com/2013/05/mas-tipos-de-datos-lisp.html][Lisp Tipos de datos (sobrelisp.blogspot.com)]]
+* Función cons
+** Conceptos
+  - La función ~cons~ agrega un elemento a una lista
+  - Es una función que no genera *efecto de lado* sobre las listas
+  - El 1º parámetro
+    - Si el 2º parámetro es una lista, entonces éste será el elemento a agregar a esa lista
+    - Si el 2º parámetro NO es una lista, entonces se crea un *par punteado*
+  - El 2º parámetro
+    - Puede ser una lista, que se puede crear como ~'(elem1 elem2 ..)~ ó ~(list elem1 elem2 ..)~
+    - Puede ser una variable/símbolo declarada dentro de la función con el apóstrofe como prefijo ó definida fuera con ~setq~
+    - Puede ser un tipo de dato primitivo (literal cadena, constante numérica, ...)
+  - El 1º parámetro será el elemento a agregar a la lista
+    (/suponiendo que el 2º parámetro es una lista, si no se crea un par punteado/)
+  - El 2º parámetro será la lista donde agregará los elementos
+** Ejemplos
+*** Ejemplo 1
+   #+BEGIN_SRC elisp
+     ;; Agrega el 1 a la lista '(2) quedando '(1 2)
+     (cons 1 '(2))
+
+     ;; Agrega el 1 a la lista '(2 3 4) quedando '(1 2 3 4)
+     (cons 1 (list 2 3 4))
+
+
+     ;; Crea un par punteado (1 . 2)
+     (cons 1 2)
+
+     ;; Crea un par punteado ("a" . 2)
+     (cons "a" 2)
+
+     ;; Crea un par punteado (a . b)
+     (cons 'a 'b)
+
+     ;; Crea un par punteado (a . 1)
+     (cons 'a 1)
+   #+END_SRC
+** Referencias
+*** Referencias Oficiales
+   1. [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Building-Lists.html][Building Lists (gnu.org)]]
+* Función acons
+** Conceptos
+   - La función ~acons~ agrega al comienzo de una (alist) *Lista Asociativa* un *par punteado* como elemento (/lo agrega con la notación "dotted pair"/)
+   - El 1º parámetro es el elemento a agregar
+   - El 2º parámetro es la (alist) *Lista asociativa*
+** Ejemplos
+*** Ejemplo 1
+   #+BEGIN_SRC elisp
+     ;; - en el 1º parámetro estamos declarando una variable/símbolo `a' por usar el apóstrofe,
+     ;; y le asignamos como valor la consante entera `1'
+     ;; - en el 2º parámetro creamos una (alist) de dos elementos/asociaciones
+     ;;
+     ;; - con `acons' agregamos el par punteado (a . 1) en la (alist)
+     ;; quedando ((a . 1)) (b . 2) (c . 3))
+     (acons 'a 1 '((b . 2) (c . 3)))
+   #+END_SRC
+* Función assoc
+** Conceptos
+   - La función ~assoc~ obtiene un elemento de una (alist) *Lista Asociativa*, buscando al elemento por su clave
+   - El 1º parámetro es la clave del elemento/asociación a buscar
+   - El 2º parámetro es la (alist) *Lista Asociativa*
+** Ejemplos
+*** Ejemplo 1
+  #+BEGIN_SRC elisp
+    ;; - El 1º parámetro es la clave del elemento/asociación que queremos buscar
+    ;; - El 2º parámetro es una (alist) de 2 elementos
+    ;; -
+    ;; - `assoc' devolverá como elemento un par punteado (clave . valor)
+    ;; si encuentra la clave en la (alist), si no devuelve `nil'
+    (assoc 'b '((a . 1) (b . 2)))
+  #+END_SRC
