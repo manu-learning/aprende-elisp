@@ -470,10 +470,10 @@
   #+BEGIN_QUOTE
   La sintáxis de una *alist* puede variar según si la clave tiene asociada uno ó varios elementos
   
-  Si cada clave tiene asociada sólo a un elemento usamos la notación *dotted pair*
+  Si cada clave tiene asociada sólo a un valor, entonces usamos la notación *dotted pair*
   Por ejemplo ~'((clave1 . valor1) (clave2 . valor2) ... (clave-n . valor-n))~
   
-  Si cada clave tiene asociado más de un elemento
+  Si cada clave tiene asociado más de un valor
   Por ejemplo ~'((clave1 valor1 valor2 valor) (clave2 valor1 valor2) ...)~
   #+END_QUOTE
 ** Ejemplos
@@ -497,7 +497,7 @@
      ;; 2. con `cdr' obtenemos el valor asociado
      (cdr (assoc 'clave2 datos))
    #+END_SRC
-*** Ejemplo 2 - Crear listas asociativas
+*** Ejemplo 2 - Crear lista asociativa y obtener el valor asociado a un elemento
    #+BEGIN_SRC elisp
      ;; definimos una variable/simbolo global llamada `datos'
      ;; y le asignamos una (alist) Lista Asociativa con dos elementos/asociaciones
@@ -511,8 +511,84 @@
      ;; idem, pero busca por la clave que tenga el símbolo `nombre'
      (cdr (assoc 'nombre datos))
    #+END_SRC
-*** Ejemplo 3 - Usando let para variables locales
+*** Ejemplo 3 - Lista asociativa donde la clave es una variable/símbolo
    #+BEGIN_SRC elisp
+     ;; definimos una variable/símbolo global `arbolitos'
+     ;; y le asignamos una alist con 3 elementos (pares punteados)
+     (setq arbolitos '((naranjo . naranjas) (manzano . manzanas) (olivo . aceitunas)))
+
+     ;; - con `assoc' obtenemos la primera asociación de la lista que coincida con la clave
+     ;; (si no lo encuentra, devuelve nil)
+     ;; - 1º parámetro es la clave del elemento (asociación) que queremos buscar
+     ;; - 2º parámetro es la (alist) lista de asociaciones
+     (assoc 'olivo arbolitos)
+     (assoc 'manzano arbolitos)
+     (assoc 'pino arbolitos)
+
+     ;; 1. obtenemos el elemento/asociación que tenga como clave la variable/símbolo `olivo'
+     ;; 2. obtenemos el valor (CDR) del elemento/asociación
+     (cdr (assoc 'olivo arbolitos))
+   #+END_SRC
+*** Ejemplo 4 - Lista asociativa donde la clave NO es una variable/símbolo
+   #+BEGIN_SRC elisp
+     ;; - Definimos una variable/símbolo global `frutas'
+     ;; - Le asignamos una (alist) donde la clave (CAR) de cada elemento,
+     ;; es una constante entera en vez de una variable/símbolo
+     (setq frutas
+           '((2 "naranja")
+             (3 "manzana")
+             (7 "banana")))
+     (assoc 2 frutas)
+     (cdr (assoc 2 frutas))
+
+     ;; como los elementos de la (alist) no tienen la notación "dotted pair"
+     ;; podemos asociarle más de un valor a cada clave
+     (setq frutas
+           '((2 "naranja" "mandarina" "pomelo")
+             (3 "manzana" "pera")
+             (7 "banana")))
+     (assoc 2 frutas)
+     (cdr (assoc 2 frutas))
+   #+END_SRC
+*** Ejemplo 5 - Lista asociativa donde una clave tiene asociada más de un valor
+   #+BEGIN_SRC elisp
+     ;; - (alist) Lista Asociativa, donde la clave es una variable/símbolo
+     ;; - los elementos son "pares punteados" porque asociamos un par clave-valor con la notación "dotted pair"
+     '((perro . ladra) (gato . maulla) (leon . gruñe))
+
+     ;; - otro tipo de (alist) Lista Asociativa, donde la clave también es una variable/símbolo
+     ;; - los elementos  de la (alist) NO usan la notación "dotted pair"
+     ;; - podemos asociar a cada clave (conocida por CAR) más de un valor (forman parte del CDR)
+     '((perro ladra) (gato maulla) (leon gruñe))
+
+     ;; Definimos una variable/símbolo global y le asignamos la (alist)
+     (setq animales '(
+                      (perro ladra corre)
+                      (gato maulla ronronea raguña)
+                      (leon gruñe)))
+
+     ;; obtenemos el (CDR) los valores asociados
+     ;; a la (CAR) clave llamada "perro" de la lista "animales"
+     (cdr (assoc 'perro animales))
+   #+END_SRC
+*** Ejemplo 6 - Usando let para variables locales en una (alist) sin notación dotted pair
+   #+BEGIN_SRC elisp
+     ;; Usamos una (alist) donde los elementos no tienen la notación "dotted pair"
+     ;; porque cada clave tiene asociado más de un valor
+     ;;
+     ;; (let ((variable1 valor1) (variable2 valor2)) (cuerpo))
+     (let ((frutas '((manzana roja verde) (zanahoria naranja) (papa rosa blanca negra))))
+       (message "los colores de la manzana puede ser %s"
+                (cdr (assoc 'manzana frutas))))
+   #+END_SRC
+*** Ejemplo 7 - Usando let para variables locales en una (alist) con pares punteados
+   #+BEGIN_SRC elisp
+     ;; un let básico para no marearse con el ejemplo siguiente
+     (let ((x 1)) (message "%d" x))
+
+     ;; Usamos una (alist) donde los elementos son "pares punteados" (usan la notación "dotted pair")
+     ;; porque las claves tienen sólo un valor asociado
+
      ;; - definimos dos variables locales (en el ámbito de let)
      ;; - la 1º variable/símbolo se llama `dato1-personal'
      ;; y le asignamos como valor una (alist) con dos elementos
@@ -522,9 +598,15 @@
             '((edad . 4) (nombre . "carlos")))
            (dato2-familiar "samuel"))
        (cdr (assoc 'nombre dato1-personal)))
+   #+END_SRC
+*** Ejemplo 8
+   #+BEGIN_SRC elisp
+     ;; - la variable/símbolo `a' está asociado con la constante entera 1
+     ;; - el literal cadena "b" está asociado con la lista (2 3)
+     '((a . 1) ("b" 2 3))
 
-     ;; un let básico para no marearse con el ejemplo anterior
-     (let ((x 1)) (message "%d" x))
+     (setq lista-rarita '((a . 1) ("b" 2 3)))
+     (cdr (assoc "b" lista-rarita))
    #+END_SRC
 ** Referencias
 *** Referencias Oficiales
