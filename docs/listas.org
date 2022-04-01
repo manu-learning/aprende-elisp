@@ -687,3 +687,94 @@
     ;; si encuentra la clave en la (alist), si no devuelve `nil'
     (assoc 'b '((a . 1) (b . 2)))
   #+END_SRC
+* Lista de Propiedades y Lista Asociativas
+** Conceptos
+   #+BEGIN_QUOTE
+   Usually *alists are employed as simple data structures*. They are easy to use but inefficient.
+   If you are running into performance issues, consider using hash tables instead
+   
+   *Plists are used when attaching information to symbols*. The doc strings of variables and functions,
+   for example, are just a key-value association in the property list of the symbol in question.
+   #+END_QUOTE
+** Ejemplo
+*** Ejemplo 1
+   #+BEGIN_SRC elisp
+     ;; Definimos una variable `persona'
+     ;; y le asignamos una Lista de propiedades
+     (setq persona '(:nombre "carlos" :apellido "gimenez"))
+
+     ;; alternativa
+     (setq persona (list :nombre "carlos" :apellido "gimenez"))
+
+     ;; - Definimos dos variables locales a let,
+     ;; y le asignamos un elemento de la lista de propiedades
+     ;; - Devolvemos una lista con los mismos atributos
+     (let ((nombre (plist-get persona :nombre))
+           (apellido (plist-get persona :apellido)))
+       (list
+        (cons 'nombre nombre)
+        (cons 'apellido apellido)))
+   #+END_SRC
+*** Ejemplo 2 - Función que recibe una Lista de propiedades y devuelve una Lista Asociativa
+   #+BEGIN_SRC elisp
+     ;; 1. Usamos `let' para definir varias variables
+     ;; son variables locales, viven sólo dentro de ese ámbito/scope en let
+     ;; Ej. (let ((var1 valor) (var2 valor) ...) (cuerpo donde usamos esas variables))
+     ;;
+     ;; 2. Usamos `plist-get' para obtener un elemento de la lista de propiedades
+     ;;
+     ;; 3. Usamos `list' para crear una lista con las variables definidas
+     ;; y le asociamos una variable con el mismo nombre quedando (clave . valor)
+     ;; donde clave asociada es la variable declarada con el apóstrofe
+     ;; (el resultado será una lista con elementos asociados como (clave . valor)
+     ;;
+     ;; - al usar el apostrofe estamos declarando una variable)
+     ;; - al usar `cons' estamos agregando un elemento en una lista
+     ;; (el 1º parámetro suele ser el elemento, y el 2º la lista)
+     (defun registrar-proyecto (&rest propiedades)
+       "Registrar un proyecto.
+
+       Los parámetros que recibe:
+       NOMBRE el nombre del proyecto principal en la raíz del dirctorio
+       PATH se especifíca la ruta donde esta el código fuente del proyecto
+       LENGUAJE se especifíca que lenguaje de programación se usa
+       BUILD se especifíca el comando para construir el proyecto
+       RUN se especifíca el comando para iniciar el proyecto
+       TESTS se especifíca el comando para correr las pruebas unitarias"
+       (let ((nombre (plist-get propiedades :nombre))
+             (path (plist-get propiedades :path))
+             (lenguaje (plist-get propiedades :lenguaje))
+             (build (plist-get propiedades :build))
+             (run (plist-get propiedades :run))
+             (tests (plist-get propiedades :tests)))
+         (list
+          (cons 'nombre nombre)
+          (cons 'path path)
+          (cons 'lenguaje lenguaje)
+          (cons 'build build)
+          (cons 'run run)
+          (cons 'tests tests))))
+
+     ;; Invocamos la función y le pasamos por parámetro la Lista de propiedades
+     ;; cada elemento de la lista es del tipo :clave1 valor :clave2 valor
+     (registrar-proyecto
+      :nombre "manu-games"
+      :path "usr/games/manu-games"
+      :lenguaje "javascript"
+      :build "npm run build"
+      :run "gulp --production"
+      :tests "npm run tests")
+
+     (registrar-proyecto
+      :nombre "manu-docs"
+      :path "usr/app/manu-docs"
+      :lenguaje "javascript"
+      :build "make build"
+      :run "make start"
+      :tests "make tests")
+   #+END_SRC
+** Referencias
+*** Referencias Oficiales
+   1. [[https://www.emacswiki.org/emacs/AlistVsPlist][Alist Vs. Plist (emacswiki.org)]]
+*** Referencias Issues
+   1. [[https://answerbun.com/emacs/why-does-emacs-use-both-propertly-lists-and-association-lists/][Why does emacs use both property lists and association lists (answerbun.com)]]
