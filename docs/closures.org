@@ -1,4 +1,4 @@
-#+TITLE: Closures
+#+TITLE: Closures + Binding
 * Intro
    - Elisp tiene como característica de utilizar *Dynamic Binding* y *Lexical Binding* (/éste último está desactivado por default en emacs/)
    - Al habilitar el *Lexical Binding* en emacs
@@ -31,22 +31,22 @@
       ; definimos una variable que le asignamos una función lambda por tanto podemos ejecutarla como una función
       ; con `funcall'
       ;
-      ; 1. con `setq' definimos una variable test
+      ; 1. con `setq' definimos una variable `test'
       ; 2 con `let' definimos un nuevo contexto que reescribirá el valor de las variables si estas fueran externas
-      ; pero sólo dentro de del contexto definido por let
-      ; 2.1 definimos sólo una variable en el contexto de `let' y le asignamos el string "bar"
+      ; pero sólo dentro de del contexto definido/delimitado por `let'
+      ; 2.1 definimos una variable `foo' en el contexto de `let' y le asignamos el string "bar"
       ; 2.2 en el cuerpo de `let' agregamos una función lambda
-      ; 2.2.1 la lambda no tiene parámetros, pero lo usual sería `let (param1 param2 ..) (cuerpo)'
+      ; 2.2.1 la lambda no tiene parámetros, lo usual sería algo del tipo `let (param1 param2 ..) (cuerpo)'
       ; 2.2.2 la lambda tiene en el cuerpo la variable definida por `let' por tanto es lo que retornará la lambda
 
-      ;definimos una variable foo y le asignamos el string "bar"
+      ; definimos una variable `foo' y le asignamos el string "bar"
       ; 1.2 ejecutamos una lambda sin parámetros que tiene la variable foo de cuerpo, es lo que devolverá
-      (setq test (let ((foo "bar")) (
-                                     lambda () foo)))
-      ; ejecutamos la variable `test' que retorna una lambda por tanto sería como una función por eso funcall
+      (setq test (let ((foo "bar"))
+                   (lambda () foo)))
+      ; llamamos a la variable `test' con `funcall' como una función porque ésta retorna una lambda
       (funcall test)
 
-      ; sin el lexical binding debería retornar "algo"
+      ; si tenemos el lexical binding desactivado, entonces retornará el string "algo"
       (let ((foo "algo")) (funcall test))
     #+END_SRC
 *** Ejemplo 3
@@ -54,27 +54,39 @@
       ; habilitamos el lexical binding
       (setq lexical-binding t)
 
-      ;; creamos un closure, actúa como un contador
-      (let ((foo (lambda ()
-                   "soy un patito")))
+      ;; 1. declaramos dentro del contexto de `let' una variable `foo'
+      ;; 2. a la variable `foo' le asignamos una lambda
+      ;; 2.1 la lambda no recibe parámetros
+      ;; 2.2 el cuerpo de la lambda tiene un string (lo que retornará la lambda)
+      ;;
+      ;; 3. en el cuerpo de `let' definimos una función `bar'
+      ;; 3.1 la función `bar' invoca la variable `foo' como una función porque ésta retorna una lambda
+      (let ((foo (lambda () "soy un patito")))
         (defun bar ()
           (funcall foo)))
 
-      ; devolverá "soy un patito" sólo si está habilitado el lexical binding
+      ;; si está habilitado el lexical binding devolverá el string "soy un patito" que retorna la lambda asignada a la variable `foo'
+      ;; si NO está habilitado, lanzará un error indicando que no está definido `foo' porque sólo vive en el contexto de `let'
       (bar)
     #+END_SRC
 ** Otros Ejemplos
-*** Ejemplo 2 - Contador
+*** Ejemplo 1 - Contador
     #+BEGIN_SRC elisp
       ;; habilitamos lexical binding
       (setq lexical-binding t)
 
-      ;; creamos un closure, actúa como un contador
+      ;; creamos un closure, que incrementará el valor de `counter' cada vez que se ejecute la función `counting'
+      ;;
+      ;; 1. declaramos la variable `counter' dentro del contexto de `let' y le asignamos el entero `0'
+      ;; 2. en el cuerpo de `let' definimos una función `counting' que incrementa en 1 el valor de la variable atada a `let'
+      ;;
+      ;; si no habilitamos el lexical binding, al invocar a `counting' lanzará un error porque no recibe como parámetro
+      ;; la variable `counter' de `let' que estaba inicializada en `0'
       (let ((counter 0))
         (defun counting ()
           (setq counter (1+ counter))))
 
-      ;; cada llamada incrementará el valor
+      ;; cada llamada incrementará el valor (suponiendo que está habilitado el lexical binding)
       (counting)
     #+END_SRC
 *** Ejemplo 2
@@ -96,23 +108,31 @@
   - Hay un *enlace/vínculo* entre la *llamada a una función* (el nombre/identificador) y la *definición de la función* (su implementación)
 
   #+BEGIN_QUOTE
-  En Binding Dinámico, los nombres de todas la variables y sus valores viven en una única tabla global
+  En *Binding Dinámico* los nombres de todas la variables y sus valores viven en una única tabla global
 
-  En Binding Estático, cada "ámbito de scope" (función, sintáxis let, ..) crea una nueva tabla de nombre de variables y valores,
-  organizada jerárquicamente conocido como "ámbito"
+  En *Binding Estático* cada *ámbito de scope* (función, sintáxis let, ..) crea una nueva tabla de nombre de variables y valores,
+  organizada jerárquicamente conocido como "ámbito" (las variables viven sólo en ese scope/ámbito)
   #+END_QUOTE
 ** Ejemplos
 *** Ejemplo de Binding con let
    #+BEGIN_SRC elisp
      ;; - con `let' podemos crear un `binding' (enlace, vínculo) entre un identificador y su valor
-     ;; - declara el identificador `nombre' y lo vincula con el valor (un string) "carlitos"
-     ;; - el vínculo/enlace creado por `let' vive sólo dentro de su scope, fuera de éste finaliza
+     ;; - declaramos el identificador `nombre' y lo vincula con el valor (un string) "carlitos"
+     ;; - el vínculo/enlace creado por `let' vive sólo dentro de su scope/ámbito, fuera de éste deja de existir
      (let ((nombre "carlitos"))
        (print nombre))
 
      ;; `let' es un "azúcar sintáctico", porque en realidad es una función `lambda'
+     ;;
+     ;; 1. declaramos dos variables `a' y `b' que viven dentro del ámbito de `let' y le asignamos como valor los enteros `1' y `2'
+     ;; 2. en el cuerpo de `let' sumamos los valores de las variables
      (let ((a 1) (b 2)) (+ a b))
 
+     ;; ésta lambda hace lo mismo que el let anterior
+     ;;
+     ;; 1. recibe dos parámetros `a' y `b'
+     ;; 2. en el cuerpo suma sus valores
+     ;; 3. le pasamos el valor de los dos parámetros a la lambda `1' y `2'
      ((lambda (a b) (+ a b)) 1 2)
    #+END_SRC
 *** Ejemplo de Binding al llamar una función (defun)
@@ -126,7 +146,7 @@
 
      (saludar "carlitos")
    #+END_SRC
-*** Ejemplos de Binding en Java
+*** Ejemplos conceptuales de Binding en Java
     #+BEGIN_QUOTE
     Binding Dinámico
     - En java, al mandar un mensaje a dos objetos polimórficos distintos (/concepto de polimorfismo/)
@@ -145,7 +165,7 @@
   Un ejemplo de *Binding Dinámico*  puede ocurrir cuando se trabaja con métodos polimorfos en un lenguaje de programación orientada a objetos,
   ya que la *definición completa del tipo del objeto* no se conoce hasta el *momento de la ejecución*
   #+END_QUOTE
-** Ejemplo en el (OOP) Paradigma Orientado a Objetos
+** Ejemplo en (OOP) Paradigma Orientado a Objetos
    #+BEGIN_QUOTE
    Si tenemos la clases ~Contador~ y ~Programador~ que heredan los métodos de ~Empleado~ quien declara el método ~trabajar~
 
