@@ -91,7 +91,7 @@
       ;; obtenemos la cabeza de la lista, retornará `una'
       (car '(una lista de simbolos))
     #+END_SRC
-* Backquote (tilde)
+* Backquote (comilla invertida)
 ** Conceptos
    - El símbolo ~`~ (backquote, la tilde) es similar a usar ~'~ (quote, comilla simple)
    - Con el símbolo ~`~ (backquote) creamos una lista de elementos, donde podemos especificar que elemento evaluar usando el símbolo ~,~ (la coma)
