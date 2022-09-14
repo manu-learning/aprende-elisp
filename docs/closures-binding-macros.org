@@ -422,8 +422,8 @@
 
    #+BEGIN_QUOTE
    La diferencia entre una *macro* y una *función* es
-   Si X es una función => la llamada a X devolverá un *valor*
-   Si X es una macro => la llamada a X devolverá una *expresión* (definida dentro de la macro)
+   - Si X es una función => la llamada a X devolverá un *valor*
+   - Si X es una macro => la llamada a X devolverá una *expresión* (definida dentro de la macro)
 
    Cuando se hace una llamada a una macro lo que ocurre es
    1. se expande la macro (se reemplaza por la definición que ésta contiene)
@@ -588,6 +588,46 @@
     2. [[https://medium.com/@CBowdon/getting-your-head-around-emacs-lisp-macros-c4bb3b1398e8][Getting your head around emacs lisp macros (medium.com/@CBowdon)]]
     3. [[https://gist.github.com/caiorss/db85095ca8c3bfd46865][Elisp Macro examples (gist.github.com/caiorss)]] 
     4. [[https://xdoc.mx/preview/notas-5e5d6cbfa119c ][Notas de Anónimo, orientado a Lisp (xdoc.mx)]]
+* Expandir Macros
+** Ejemplo 1 - Expansión simple
+  #+BEGIN_SRC elisp
+    (defmacro incrementar (var)
+      (list 'setq var (list '1+ var)))
+
+    ;; produce el mismo resultado que la macro incrementar
+    ;; pero es más fácil de leer por usar backquote (comillas invertidas) en vez de list
+    (defmacro incrementar-en-1 (var)
+      `(setq var (1+ ,var)))
+
+    ;; si expandimos la macro incrementar-en-1
+    ;;
+    ;; el resultado será: (setq var (1+ r))
+    (macroexpand '(incrementar-en-1 r))
+  #+END_SRC
+** Ejemplo 2 - Expandir macros anidadas
+  #+BEGIN_SRC elisp
+    (defmacro incrementar-en-1 (var)
+      `(setq var (1+ ,var)))
+
+    (defmacro incrementar-varios-en-1 (var1 var2)
+      `(progn (incrementar-en-1 ,var1) (incrementar-en-1 ,var2)))
+
+    (setf x 1 y 2)
+    (incrementar-varios-en-1 x y)
+
+    ;; si expandimos la macro incrementar-en-1
+    ;;
+    ;; el resultado será: (setq var (1+ r))
+    (macroexpand '(incrementar-en-1 r))
+
+    ;; si expandimos la macro incrementar-varios-en-1 sólo expandirá la macro pasada por parámetro a macroexpand
+    ;; si queremos que expanda el resto de las macros incluidas, debemos usar macroexpand-all
+    ;;
+    ;; el resultado será: (progn incrementar-en-1 (1+ r) incrementar-en-1 (1+ r))
+    (macroexpand '(incrementar-varios-en-1 r s))
+
+    (macroexpand-all '(incrementar-varios-en-1 r s))
+  #+END_SRC
 * TODO Otros Ejemplos
   #+BEGIN_COMMENT
   pendiente seguir analizando, antes creías que eran closures...
