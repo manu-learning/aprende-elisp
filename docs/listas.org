@@ -24,6 +24,40 @@
   - ~"a"~ (/otro tipo primitivo, literal cadena/)
   - ~'x~ (/una variable declarada con el identificador x/)
   #+END_QUOTE
+** Ejemplos Básicos
+*** Ejemplo 1 - Diferentes maneras de crear listas
+    #+BEGIN_SRC elisp
+    (quote (1 2 3))
+
+    ;; la comilla simple es la forma corta de usar quote
+    '(1 2 3)
+
+    (list 1 2 3)
+    #+END_SRC
+*** Ejemplo 2 - Obtener un elemento específico de una lista
+    #+BEGIN_SRC elisp
+    ;; (nth n lista)
+    ;;
+    ;; nth: devuelve de una lista un elemento especificando su posición
+    (nth 0 '(1 2 3))
+    (nth 1 '(1 2 3))
+    #+END_SRC
+*** Ejemplo 3 - Obtener la posición de un elemento
+    #+BEGIN_SRC elisp
+    ;; (position n lista)
+    ;;
+    ;; position: devuelve la posición de un elemento perteneciente a una lista
+    (position 2 '(1 2 3 5))
+    (position 5 '(1 2 3 5))
+    #+END_SRC
+*** Ejemplo 4 - Filtrar elementos usando lambdas
+    #+BEGIN_SRC elisp
+    ;; (remove-if-not funcion-lambda lista)
+    ;;
+    ;; remove-if-not: filtra los elementos de la lista que cumplan con la condición de la función lambda
+    (remove-if-not (lambda (x) (> x 2))
+    '(1 2 3 4 5))
+    #+END_SRC
 ** Ejemplos
 *** Ejemplo 1 - Operaciones básicas
   #+BEGIN_SRC elisp
@@ -166,10 +200,11 @@
    #+BEGIN_SRC elisp
      ;; Definimos una variable `persona'
      ;; y le asignamos una Lista de propiedades
-     ;; (usamos el apóstrofe para crear la lista)
+     ;; (usamos el apóstrofe para crear la lista, es la forma corta a quote)
      (setq persona '(:nombre "carlos" :apellido "gimenez"))
 
-     (plist-get persona 'nombre)
+     ;; obtenemos el valor del atributo nombre
+     (plist-get persona :nombre)
 
      ;; alternativa, usando la función `list'
      (setq persona (list :nombre "carlos" :apellido "gimenez"))
@@ -180,7 +215,33 @@
      ;; aunque considero que las primeras se entienden mejor
      (setq persona '(nombre "carlos" apellido "gimenez"))
    #+END_SRC
-*** Ejemplo 2 - Crear/Modificar una Lista de propiedades
+*** Ejemplo 2 - Definir una única vez una lista de propiedades con defvar
+    #+BEGIN_SRC elisp
+      ;; con defvar definimos una variable una única vez
+      ;; si ya existe una variable con esta lista no se sobreescribe
+      (defvar mi-lista-config (list
+                            :buffer (current-buffer)
+                            :linea 50
+                            :posicion 50))
+
+      ;; si evaluamos la variable debería devolver una lista de propiedades
+      mi-lista-config
+
+      ;; (plist-get plist propiedad)
+      ;;
+      ;; plist-get: obtenemos los valores de cada propiedad
+      (plist-get mi-lista-config :linea)
+
+      (plist-get mi-lista-config :posicion)
+
+      (plist-get mi-lista-config :buffer)
+
+      ;; si hicieramos esto, no podemos redefinir la lista con defvar
+      ;; deberíamos usar setq
+      (setq lista-config nil)
+
+    #+END_SRC
+*** Ejemplo 3 - Crear/Modificar una Lista de propiedades
    #+BEGIN_SRC elisp
      ;; - definimos una variable y le asignamos una Lista de propiedades
      ;; con 3 elementos tipo clave-valor
@@ -206,7 +267,7 @@
      ;; - no usamos paréntesis porque sólo sirven para las funciones
      personajes
    #+END_SRC
-*** Ejemplo 3 - Obtener el valor de un elemento por su clave/nombre
+*** Ejemplo 4 - Obtener el valor de un elemento por su clave/nombre
    #+BEGIN_SRC elisp
      ;; - en ambos ejemplos estamos creando una lista de propiedades
      ;; y pasandola por parámetro, su ciclo de vida termina cuando
@@ -220,7 +281,7 @@
      ;; obtenemos el valor de la clave `edad'
      (plist-get '(nombre "carlitos" edad 5) 'edad)
    #+END_SRC
-*** Ejemplo 4 - Crear listas de propiedades + Agregar/Modificar elementos (más detallado)
+*** Ejemplo 5 - Crear listas de propiedades + Agregar/Modificar elementos (más detallado)
    #+BEGIN_SRC elisp
      ;; - definimos la lista de propiedades, de tres maneras
      ;; 1º manera: podemos usar la función `list'
@@ -252,7 +313,7 @@
 
      estudiante ; evaluemos la variable para ver su valor
    #+END_SRC
-*** Ejemplo 5 - Usando let para usar variables locales
+*** Ejemplo 6 - Usando let para usar variables locales
    #+BEGIN_SRC elisp
      ;; definimos una variable
      ;; y le asignamos una plist con dos elementos
@@ -608,6 +669,48 @@
      (setq lista-rarita '((a . 1) ("b" 2 3)))
      (cdr (assoc "b" lista-rarita))
    #+END_SRC
+*** Ejemplo 9 - Definir una única vez una lista asociativa con defvar
+    #+BEGIN_SRC elisp
+      ;; definimos una variable con una lista asociativa
+      ;; donde cada elemento es de la forma (clave . valor) conocidos como cons cells
+      ;;
+      ;; otra definición de una "cons cell" es que está formada una lista con dos punteros
+      ;; la "clave" sería la cabeza de la lista, el "valor" sería la cola de la lista
+      (defvar lenguajes-favoritos
+        '(
+          ("haskell" . ((:descripcion . "lenguaje de programación funcional")
+                           (:comando . "haskell")))
+          ("prolog" . ((:descripcion . "lenguaje de programación lógico")
+                     (:comando . "prolog")))
+          )
+        )
+
+      ;; si evaluamos la variable imprimirá la alist en el minibuffer
+      lenguajes-favoritos
+
+      ;; obtenemos todos asociaciones (clave . valor) del elemento que tiene como clave la cadena "haskell"
+      ;; de la lista asociativa
+      (assoc "haskell" lenguajes-favoritos)
+
+      ;; obtenemos el valor :comando de una cons cell (clave . valor) que tenga como clave la cadena "haskell"
+      ;; de la lista asociativa
+      (assoc :comando (assoc "haskell" lenguajes-favoritos))
+
+      ;; obtenemos el valor de la asociación (clave . valor) del elemento (cons cell) anterior
+      (cdr (assoc :comando (assoc "haskell" lenguajes-favoritos)))
+
+      ;; Nota: recordar que cada elemento de una lista asociativa es una celda cons (ó bien cons cells)
+      ;; porque cada elemento '(clave . valor) es lo mismo que (cons 'x 'y)
+      (cons 'x 'y)
+
+      '(a . b)
+
+      ;; de cada elemento (clave . valor) de la lista asociativa, obtenemos cada clave
+      (mapcar 'car lenguajes-favoritos)
+
+      ;; de cada elemento (clave . valor) de la lista asociativa, obtenemos cada valor
+      (mapcar 'cdr lenguajes-favoritos)
+    #+END_SRC
 ** Referencias
 *** Referencias Oficiales
    1. [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Association-Lists.html][Association Lists (gnu.org)]]
@@ -617,6 +720,62 @@
    1. [[http://xahlee.info/emacs/emacs/elisp_association_list.html][Elisp Association List (xahlee.info)]]
    2. [[https://kitchingroup.cheme.cmu.edu/blog/2017/04/16/A-callable-plist-data-structure-for-Emacs/][A callable plist data structure (kitchingroup.cheme.cmu.edu)]]
    3. [[https://sobrelisp.blogspot.com/2013/05/mas-tipos-de-datos-lisp.html][Lisp Tipos de datos (sobrelisp.blogspot.com)]]
+* Funciones para Listas Asociativas
+** Lista asociativa para los ejemplos
+   #+BEGIN_SRC elisp
+     ;; definimos una variable con una lista asociativa
+     ;; donde cada elemento es de la forma (clave . valor) conocidos como cons cells
+     ;;
+     ;; otra definición de una "cons cell" es que está formada una lista con dos punteros
+     ;; la "clave" sería la cabeza de la lista, el "valor" sería la cola de la lista
+     (defvar lenguajes-favoritos
+       '(
+         ("haskell" . ((:descripcion . "lenguaje de programación funcional")
+                       (:comando . "haskell")))
+         ("prolog" . ((:descripcion . "lenguaje de programación lógico")
+                      (:comando . "prolog")))
+         )
+       )
+   #+END_SRC
+** Ejemplo 1 - Obtener el Valor de un elemento/asociación
+   #+BEGIN_SRC elisp
+     ;; si evaluamos esta variable, debería devolver una lista asociativa
+     ;; que debimos evaluar previo a probar este ejemplo
+     lenguajes-favoritos
+
+     ;; 1. definimos la función
+     ;; 1.1 con assoc obtenemos un elemento (clave . valor) de la lista que
+     ;; tenga como clave la pasada por parámetro a la función
+     ;; 1.2 obtenemos del elemento anterior el valor de la asociación (clave . valor)
+     (defun get-valor (lista-asociativa clave)
+       (cdr (assoc clave lista-asociativa)))
+
+     ;; 2. llamamos a la función y devolverá el valor del elemento/asociación (clave . valor)
+     (get-valor lenguajes-favoritos "haskell")
+   #+END_SRC
+** Ejemplo 2 - Obtener la Clave-Valor de un elemento/asociación
+   #+BEGIN_SRC elisp
+     ;; si evaluamos esta variable, debería devolver una lista asociativa
+     ;; que debimos evaluar previo a probar este ejemplo
+     lenguajes-favoritos
+
+     ;; 1. definimos la función
+     ;; 1.1 con assoc obtenemos un elemento (clave . valor) de la lista que
+     ;; tenga como clave la pasada por parámetro a la función
+     ;; 1.2 obtenemos del elemento anterior el valor de la asociación (clave . valor)
+     (defun get-valor (lista-asociativa clave)
+       (cdr (assoc clave lista-asociativa)))
+
+     ;; 2. definimos otra función que reutiliza la anterior (función de orden superior)
+     ;; el comportamiento es el mismo, ya que usamos cons cells osea elementos de al forma (clave . valor)
+     (defun get-atributo (lista-asociativa clave atributo)
+       (cdr (assoc atributo (get-valor lista-asociativa clave))))
+
+     ;; 3. llamamos a la función y devolverá el valor del elemento/asociación (clave . valor)
+     (get-valor lenguajes-favoritos "haskell")
+     (get-atributo lenguajes-favoritos "haskell" :descripcion)
+
+   #+END_SRC
 * Función cons
 ** Conceptos
   - La función ~cons~ agrega un elemento a una lista
