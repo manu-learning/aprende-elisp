@@ -1,4 +1,10 @@
 #+STARTUP: inlineimages
+* Definir variables - Defvar Vs. Setq
+  - Al definir una variable con ~defvar~ el valor de ésta NO se sobreescribe si ya existe
+  - Al definir una variable con ~setq~ el valor de ésta SI se sobreescribe
+* Defvar - Definir una variable única vez
+** Conceptos
+  - Con ~defvar~ podemos definir una variable "similar" que con ~setq~
 * Declarar Variables y Definirlas con setq y set
 ** Conceptos
   - La sintáxis para declarar una variable es ~'nombreVariable~
@@ -100,13 +106,24 @@
 
   #+RESULTS:
   : 1
+* Declarar multiples variables con setf
+** Ejemplo
+   #+BEGIN_SRC elisp
+     ;; con setf podemos definir multiples variables
+     (setf a 1 b 2 c 3)
+
+     ;; si evaluamos las tres variables tendrán los valores asignados con setf
+     a
+     b
+     c
+   #+END_SRC
 * Let
 ** Conceptos
   - La sintáxis es ~(let ((variableA valorX) (variableB valorY) ...) (cuerpo-de-la-funcion)~
   - Crea un nuevo scope, sobreescribe el valor de las variables externas pero sólo dentro del ámbito/scope
   - Para definir variables locales ó sobreescribir variables externas para uso dentro de la funcion
   - Los parámetros que recibe son
-    1. 1º parámetro: una lista de clave-valor cada elemento uno con ésta sintáxis ~(variable valor)~
+    1. 1º parámetro: una lista de clave-valor cada elemento con ésta sintáxis ~(variable valor)~
     2. 2º parámetro: el cuerpo de la función (una ó varias funciones) 
 ** Ejemplos
 *** Ejemplo 1 - Definimos dos variables locales al scope de let
@@ -135,7 +152,7 @@
     ;; se mantiene con el valor `10', no fue alterado por `let'
     (message "el valor de x es %d" x)
   #+END_SRC
-*** [TODO] Ejemplo 3
+*** TODO Ejemplo 3
   #+BEGIN_SRC elisp :exports both
     ;; definimos una función que no recibe parámetros,
     ;; e imprime en el minibuffer el valor de `c'
@@ -163,7 +180,7 @@
 
   #+RESULTS:
   : Este buffer es README.org y tiene 12632 caracteres.
-*** [DOING] Ejemplo 5
+*** TODO Ejemplo 5
    #+BEGIN_SRC elisp
      ;; sólo devuelve el valor de una variable local
      (let ((fuerza 100)
@@ -196,5 +213,6 @@
        (message "el valor del elemento es %s" dato1))
    #+END_SRC
 ** Referencias
+*** TODO Referencias Oficiales
 *** Referencias Issues
    1. [[https://stackoverflow.com/questions/32802132/why-are-there-two-parentheses-after-let-in-emacs-lisp][Why are there two parentheses after let? (stackoverflow.com)]]
